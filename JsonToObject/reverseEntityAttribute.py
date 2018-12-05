@@ -18,8 +18,16 @@ __maintainer__ = "Dominik Lux"
 __version__ = "0.0.1a"
 __status__ = "Developement"
 
-TYPE_VALUE_METADATA_NOT_DEFINED_MESSAGE = "One of the following is not defined in json: {type|value|metadata}"
-VALUE_EMPTY_MESSAGE = "The Value entered is empty!"
+### Error Messages
+TYPE_VALUE_METADATA_NOT_DEFINED_MESSAGE = "One of the following is not defined in json: {type|value}"
+VALUE_EMPTY_MESSAGE = "The Value entered cannot be empty!"
+
+### Types which can be retrieved from the JSON:
+NUMERICAL_TYPES = ["number", "integer", "int", "float", "double", "long", ]
+TEXT_TYPES = ["string",  "text"]
+BOOLEAN_TYPES = ["bool",  "boolean"]
+ARRAYLIKE_TYPES = ["array", "list", "tuple", "vector"]
+OBJECTLIKE_TYPES = ["object", "obj"]
 
 
 class ReverseEntityAttribute(object):
@@ -29,11 +37,10 @@ class ReverseEntityAttribute(object):
         It defaults then from:
         Complex, Tuple -> List
         Unicode -> String
-
     """
 
     def __init__(self, _dict, useMetadata=True):
-        """ throw Error!!
+        """ By initializing we set the value in self.value
         """
         self.value = None
 
@@ -41,48 +48,35 @@ class ReverseEntityAttribute(object):
             raise ValueError(VALUE_EMPTY_MESSAGE)
 
         if 'type' not in _dict or 'value' not in _dict:
-            # Check if a viable struct exists.
+            # Check if a correct struct exists.
             raise ValueError(TYPE_VALUE_METADATA_NOT_DEFINED_MESSAGE)
 
         if not 'metadata' in _dict:
             useMetadata=False
 
 
+        # Back Conversion:
         if _dict['type'] == '' :
             self.value = _dict['value']
 
-        if _dict['type'] == 'boolean' :
-            self.value = bool(_dict['value'])
+        elif _dict['type'].lower() in BOOLEAN_TYPES:
+            self._setValue(bool, _dict['value'])
             return
 
-        if  _dict['type'] == 'number' or _dict['type'] == 'Integer':
-            if(isinstance(_dict['value'], int)):
-                self.value = int(_dict['value'])
-            elif(isinstance(_dict['value'], float)):
-                self.value = float (_dict['value'])
-            elif(isinstance(_dict['value'], long)):
-                self.value = long(_dict['value'])         
-            # some how Python 2.7/NGSIproxy/wirecloud is converting an Unicode instead of having the correct type
-            elif isinstance(_dict['value'], str) or isinstance(_dict['value'], unicode):
-                try:
-                    self.value =  int(_dict['value'])
-                except ValueError:
-                    try:
-                        self.value = float(_dict['value'])
-                    except ValueError:
-                        return 
+        elif  _dict['type'].lower() in NUMERICAL_TYPES:
+            # Case something numerical
+            self._setValue(float, _dict['value'])
+            if self.value % 1 == 0.0: 
+                # Number is Integer Like, convert to int or long
+                self._setValueWithMetadata([int, long], useMetadata, _dict, self.value)
+            else:
+                return
 
-        elif _dict['type'] == 'string':
+        elif _dict['type'].lower() in TEXT_TYPES:
             # Case String or Unicode
-            if useMetadata and 'python' in _dict['metadata']:
-                metadata = _dict['metadata']
-                if metadata['python'] == dict(type="dataType", value="unicode"):
-                    self.value = unicode(_dict['value'])
-                    return
-            # defaulting to str
-            self.value = str(_dict['value'])
+            self._setValueWithMetadata([unicode, str], useMetadata, _dict, _dict['value'])
 
-        elif _dict['type'] == 'array':
+        elif _dict['type'].lower() in ARRAYLIKE_TYPES:
             # Case Complex, Tuple or List
             # First: reverse every element to Obj
             tempList = _dict['value']
@@ -92,24 +86,15 @@ class ReverseEntityAttribute(object):
                 tempValue.append(re.getValue())
 
             # Second: decide if Complex, Tuple or List
-            if useMetadata and 'python' in _dict['metadata']:
-                metadata = _dict['metadata']
-                if metadata['python'] == dict(type="dataType", value="complex"):
-                    self.value = complex(*tempValue)
-                    return
-                elif metadata['python'] == dict(type="dataType", value="tuple"):
-                    self.value = tuple(tempValue)
-                    return
-            # defaulting to list
-            self.value = list(tempValue)
+            self._setValueWithMetadata([complex, tuple, list], useMetadata, _dict, tempValue)
 
-        elif _dict['type'] == 'object':
+        elif _dict['type'].lower() in OBJECTLIKE_TYPES:
             # arbitary JSON object with key, value
             tempDict = _dict['value']
             self.value = {}
             for key, value in tempDict.iteritems():
-                re = ReverseEntityAttribute(value, useMetadata)
-                self.value[key] = re.getValue()
+                rea = ReverseEntityAttribute(value, useMetadata)
+                self.value[key] = rea.getValue()
             return
 
         else:
@@ -124,5 +109,42 @@ class ReverseEntityAttribute(object):
             self.value = tempDict
             return
 
+
     def getValue(self):
         return self.value
+
+
+    def _setValue(self, targetType, value):
+        """ This function sets self.value  . 
+            Complex needs to be called differently
+            and we need to check if the input of bool is a string
+        """
+        if targetType == bool and type(value) == str:
+            self.value = value.lower in ["false", "f", "0"]
+        elif targetType != complex:
+            self.value = targetType(value)
+        else: 
+            self.value = targetType(*value)
+
+
+    def _setValueWithMetadata(self, targetTypes, useMetadata, readict, value):
+        """ This function sets the Value, dependent on the given metadata.
+            If no metadata is given or it does not contain the correct format,
+            we default to the last element of targetTypes
+        """
+        if useMetadata and 'python' in readict['metadata']:
+            metadata = readict['metadata']
+
+            # we try to find a valid dataType
+            for tt in targetTypes:
+                if metadata['python'] == dict(type="dataType", value=tt.__name__):
+                    self._setValue(tt, value)
+                    return
+            
+            # Case: we did not set self.value, we default to the last element
+            self._setValue(targetTypes[-1], value)
+            return
+        else:
+            # Case: no metadata, we also default to the last element
+            self._setValue(targetTypes[-1], value)
+            return

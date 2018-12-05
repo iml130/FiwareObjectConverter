@@ -111,4 +111,22 @@ class TestEntityAttribute(unittest.TestCase):
         self.assertEqual(dict(int=1), rea.getValue())
         self.assertEqual(type(rea.getValue()), dict)
 
+    def test_ReverseEntityAttributeFloat_WithWrongValue(self):
+        d = dict(type="number", value="2.132", metadata=dict(
+            python=dict(type="dataType", value="float")))
+        rea = ReverseEntityAttribute(d)
+        self.assertEqual(2.132, rea.getValue())
+        self.assertEqual(type(rea.getValue()), float)
 
+    def test_ReverseEntityAttributeInt_WithWrongValue(self):
+        d = dict(type="number", value="1", metadata=dict(
+            python=dict(type="dataType", value="int")))
+        rea = ReverseEntityAttribute(d)
+        self.assertEqual(1, rea.getValue())
+        self.assertEqual(type(rea.getValue()), int)
+
+    def test_ReverseEntityAttributeBool_WithWrongValue(self):
+        d = dict(type="boolean", value="False", metadata={})
+        rea = ReverseEntityAttribute(d)
+        self.assertEqual(False, rea.getValue())
+        self.assertEqual(type(rea.getValue()), bool)
