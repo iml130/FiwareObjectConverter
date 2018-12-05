@@ -61,7 +61,6 @@ class ReverseEntityAttribute(object):
 
         elif _dict['type'].lower() in BOOLEAN_TYPES:
             self._setValue(bool, _dict['value'])
-            return
 
         elif  _dict['type'].lower() in NUMERICAL_TYPES:
             # Case something numerical
@@ -69,8 +68,6 @@ class ReverseEntityAttribute(object):
             if self.value % 1 == 0.0: 
                 # Number is Integer Like, convert to int or long
                 self._setValueWithMetadata([int, long], useMetadata, _dict, self.value)
-            else:
-                return
 
         elif _dict['type'].lower() in TEXT_TYPES:
             # Case String or Unicode
@@ -95,7 +92,6 @@ class ReverseEntityAttribute(object):
             for key, value in tempDict.iteritems():
                 rea = ReverseEntityAttribute(value, useMetadata)
                 self.value[key] = rea.getValue()
-            return
 
         else:
             # Maybe a class with key, value or another JSON object, check if you can iterate!
@@ -107,7 +103,6 @@ class ReverseEntityAttribute(object):
                 rea = ReverseEntityAttribute(value, useMetadata)
                 tempDict[key] = rea.getValue()
             self.value = tempDict
-            return
 
 
     def getValue(self):
@@ -143,8 +138,6 @@ class ReverseEntityAttribute(object):
             
             # Case: we did not set self.value, we default to the last element
             self._setValue(targetTypes[-1], value)
-            return
         else:
             # Case: no metadata, we also default to the last element
             self._setValue(targetTypes[-1], value)
-            return

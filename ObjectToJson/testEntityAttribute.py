@@ -125,24 +125,21 @@ class TestEntityAttribute(unittest.TestCase):
         self.assertEqual(ea.type, "ClassInt")
         self.assertTrue(ea.value != None)
 
+    def test_EntityAttributeComplex_ignoreMetaData_True(self):
+        ea = EA(complex(3, 1), True)
+        self.assertTrue(not hasattr(ea, 'metadata'))
+        self.assertEqual(ea.value[0].value, 3)
+        self.assertEqual(ea.value[1].value, 1)
+        self.assertEqual(ea.type, "array")
 
-# Simple classes for Testing
-class SuperEnum(object):
-    """ Simple SuperEnum to create Enum-classes
-    """
-    class __metaclass__(type):
-        def __iter__(self):
-            for item in self.__dict__:
-                if item == self.__dict__[item]:
-                    yield item
+    def test_EntityAttributeFloat32List_concreteDataType(self):
+        ea = EA(ClassInt(), True, concreteDataType=dict(int="uint32_t"))
+        self.assertTrue(hasattr(ea, 'metadata'))
+        self.assertEqual(ea.metadata, dict(
+            dataType=dict(type="dataType", value=dict(int='uint32_t'))))
+        self.assertEqual(ea.value['int'].value, 1)
+        self.assertEqual(ea.type, "ClassInt")
 
-
-class Color(SuperEnum):
-    """ Simple Enum with different types 
-    """
-    red = 1
-    green = "2"
-    blue = 3.12
 
 
 class ComplexExample(object):

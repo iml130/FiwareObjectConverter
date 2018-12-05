@@ -58,6 +58,55 @@ class TestReverseEntity(unittest.TestCase):
         self.assertEqual(tj.variableName, 1)
         self.assertEqual(tj.notDefinedVarByJSON, 42)
 
+    def test_ReverseEntitiysetObejctInstantiate_IgnoreWrongDataTypes(self):
+        d = dict(type="MyJSONType", id="MyJSONTypeID", variableName=dict(
+            type="number", value=1.5, metadata=dict(python=dict(type="dataType", value="float"))))
+        en = ReverseEntity(**d)
+        self.assertEqual(en.type, "MyJSONType")
+        self.assertEqual(en.id, "MyJSONTypeID")
+        self.assertEqual(en.payload, dict(variableName=dict(
+            type="number", value=1.5, metadata=dict(python=dict(type="dataType", value="float")))))
+
+        tj = TestJson()
+        en.setObject(tj, ignoreWrongDataType=True)
+
+        self.assertEqual(tj.variableName, 1.5)
+        self.assertEqual(type(tj.variableName), float)
+        self.assertEqual(tj.notDefinedVarByJSON, 42)
+
+    def test_ReverseEntitiysetObejctInstantiate_setAttr_True(self):
+        d = dict(type="MyJSONType", id="MyJSONTypeID", variableName=dict(
+            type="number", value=1.5, metadata=dict(python=dict(type="dataType", value="float"))))
+        en = ReverseEntity(**d)
+        self.assertEqual(en.type, "MyJSONType")
+        self.assertEqual(en.id, "MyJSONTypeID")
+        self.assertEqual(en.payload, dict(variableName=dict(
+            type="number", value=1.5, metadata=dict(python=dict(type="dataType", value="float")))))
+
+        tj = TestJson()
+        en.setObject(tj, setAttr=True)
+
+        self.assertEqual(tj.variableName, 1.5)
+        self.assertEqual(type(tj.variableName), float)
+        self.assertEqual(tj.notDefinedVarByJSON, 42)
+
+    def test_ReverseEntitiysetObejctInstantiate_setAttr_False(self):
+        d = dict(type="MyJSONType", id="MyJSONTypeID", variableName=dict(
+            type="number", value=1.5, metadata=dict(python=dict(type="dataType", value="float"))))
+        en = ReverseEntity(**d)
+        self.assertEqual(en.type, "MyJSONType")
+        self.assertEqual(en.id, "MyJSONTypeID")
+        self.assertEqual(en.payload, dict(variableName=dict(
+            type="number", value=1.5, metadata=dict(python=dict(type="dataType", value="float")))))
+
+        tj = TestJson()
+        try: 
+            en.setObject(tj, setAttr=False)
+            self.fail()
+        except TypeError:
+            pass
+            # Success!!
+
 
 class TestJson(object):
     def __init__(self):

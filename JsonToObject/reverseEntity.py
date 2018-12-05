@@ -25,8 +25,9 @@ MISMATCH_MESSAGE = "The Class-Type does not match with the JSON-type!"
 
 class ReverseEntity(object):
     """ A simple class which reconverts from JSON into a __dict__.
-        the Function setObject decides, whether to type check (ignoreWrongDataType)
-        and adds the (if the key from JSON is also in obj) value to the obj
+        The Function setObject decides if type check (ignoreWrongDataType)
+        is used and adds the (if the key from JSON is also in obj) value to the obj.
+        'setAttr' is here explicitly used, if set to true.
     """
 
     def __init__(self, type, id, *args, **payload):
@@ -42,10 +43,11 @@ class ReverseEntity(object):
         for key, value in self.payload.iteritems():
             rea = ReverseEntityAttribute(value, useMetadata)
             if (setAttr):
+                # Just use setAttr
                 setattr(obj, key, rea.getValue())
             elif key in obj.__dict__:
                 if (ignoreWrongDataType):
-                    # Not bidirectional
+                    # Ignoring expected Data-Type
                     obj.__dict__[key] = rea.getValue()
                 else:
                     val = rea.getValue()

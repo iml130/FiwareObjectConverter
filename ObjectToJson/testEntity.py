@@ -29,14 +29,14 @@ class Test_JsonConverter(unittest.TestCase):
         self.assertEqual(en.type, "Entity")
         self.assertEqual(en.id[0:6], "Entity")
 
-    def test_EntitiysetObejct_Primitve(self):
+    def test_Entitiy_setObejct_Primitve(self):
         en = Entity()
         try:
             en.setObject(1, {}, False)
         except ValueError:
             self.assertTrue(True)
 
-    def test_EntitiysetObejct_Non_Primitve(self):
+    def test_Entitiy_setObejct_Non_Primitve(self):
         en = Entity()
         en.setObject(TestClass(), {}, False)
         self.assertEqual(en.id[0:9], "TestClass")
