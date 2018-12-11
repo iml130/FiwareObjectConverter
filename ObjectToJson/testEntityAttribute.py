@@ -141,7 +141,6 @@ class TestEntityAttribute(unittest.TestCase):
         self.assertEqual(ea.type, "ClassInt")
 
 
-
 class ComplexExample(object):
     def __init__(self):
         self.testNone = None
@@ -155,6 +154,9 @@ class ComplexExample(object):
         self.testList = [44, 3.456, ["1", 2]]
         self.testdict = dict(a=1, b=2.5j)
         self.testClassInt = ClassInt()
+        self.testClassInt = [ClassInt()]*10 # Test id Array is supported
+        self.testClassInt = ClassSlotsInt()
+        self.testClassInt = [ClassSlotsInt()]*10 # Test id Array is supported
 
     @classmethod
     def _complex_handler(clsself, Obj):
@@ -171,3 +173,10 @@ class ComplexExample(object):
 class ClassInt():
     def __init__(self):
         self.int = 1
+
+
+class ClassSlotsInt(object):
+    __slots__ = ['val1']
+    def __init__(self):
+        self.val1 = 1
+

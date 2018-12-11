@@ -43,6 +43,7 @@ class Entity(object):
             self.type = _object.__class__.__name__
             self.id = self.type + str(uuid.uuid4())
 
+
             # Set Key/Value in own Dictionary
             if (isinstance(_object, dict)):
                 iterL = _object.keys()
