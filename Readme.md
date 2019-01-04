@@ -58,6 +58,9 @@ The `str` `json` contains the following
 }
 ```
 This is a simple class for demonstration. The Data-Structure can be arbitrary complex.
+
+The `"type"`- and `"id"`-values can be set manually. To do so, just add `self.type = "YOUR_TYPE"` and/or `self.id = "YOUR_ID"` to `FooBar`.
+
 ### FiwareEntity 2 Object
 A (Representation-) Class is needed to convert it back. Let's set a Class and then parse the JSON-Object into it:
 
