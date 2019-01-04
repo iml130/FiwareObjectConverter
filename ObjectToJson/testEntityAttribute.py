@@ -140,6 +140,13 @@ class TestEntityAttribute(unittest.TestCase):
         self.assertEqual(ea.value['int'].value, 1)
         self.assertEqual(ea.type, "ClassInt")
 
+    def test_EntityAttributeForeignRosClass(self):
+        ea = EA(RosClassWithSlotsInt(), False)
+        self.assertEqual(ea.metadata, dict(
+            python=dict(type="dataType", value="class")))
+        self.assertEqual(ea.type, "RosClass.Integer") # Slashes are not allowed!
+        self.assertTrue(ea.value != None)
+
 
 class ComplexExample(object):
     def __init__(self):
@@ -179,4 +186,10 @@ class ClassSlotsInt(object):
     __slots__ = ['val1']
     def __init__(self):
         self.val1 = 1
+
+class RosClassWithSlotsInt(object):
+    __slots__ = ['val1', '_type']
+    def __init__(self):
+        self.val1 = 1
+        self._type = "RosClass/Integer"  # Example-Type
 

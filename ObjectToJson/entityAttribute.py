@@ -91,7 +91,10 @@ class EntityAttribute():
             else:
                 raise ValueError("Cannot get attrs from {}".format(str(_object)))
 
-            self.type = _object.__class__.__name__
+            if hasattr(_object, '_type'):   # ROS-Specific Type-Declaration
+                self.type = _object._type.replace("/", ".") # Needs to be replaced Fiware does not allow a '/'
+            else:
+                self.type = _object.__class__.__name__
             self.setPythonMetaData(ipmd, "class")
             tempDict = {}
             for key in iterL:

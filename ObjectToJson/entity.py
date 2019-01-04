@@ -53,6 +53,18 @@ class Entity(object):
                 iterL = _object.__dict__
 
             for key in iterL:
+                # Explicitly set id and type if it exists
+                if (key == "id"):
+                    if (isinstance(_object, dict)):
+                        self.id = _object[key]
+                    else:
+                        self.id = getattr(_object, key) 
+                elif (key == "type"):
+                    if (isinstance(_object, dict)):
+                        self.type = _object[key]
+                    else:
+                        self.type = getattr(_object, key) 
+
                 if (isinstance(_object, dict)):
                     value = _object[key]
                 else:
