@@ -35,13 +35,14 @@ class Entity(object):
         self.type = self.__class__.__name__
         self.id = self.type + str(uuid.uuid4())
 
-    def setObject(self, _object, dataTypeDict, ignorePythonMetaData):
+    def setObject(self, _object, dataTypeDict, ignorePythonMetaData, showIdValue = True ):
         # Clear own dictionary
         self.__dict__.clear()
         try:
             # Setting EntityType and EntitiyID
-            self.type = _object.__class__.__name__
-            self.id = self.type + str(uuid.uuid4())
+            if (showIdValue):
+                self.type = _object.__class__.__name__
+                self.id = self.type + str(uuid.uuid4())
 
 
             # Set Key/Value in own Dictionary
@@ -54,12 +55,12 @@ class Entity(object):
 
             for key in iterL:
                 # Explicitly set id and type if it exists
-                if (key == "id"):
+                if (key == "id" and showIdValue):
                     if (isinstance(_object, dict)):
                         self.id = _object[key]
                     else:
                         self.id = getattr(_object, key) 
-                elif (key == "type"):
+                elif (key == "type" and showIdValue):
                     if (isinstance(_object, dict)):
                         self.type = _object[key]
                     else:
