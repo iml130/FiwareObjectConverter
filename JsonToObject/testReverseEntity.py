@@ -30,8 +30,8 @@ class TestReverseEntity(unittest.TestCase):
             type="number", value=1, metadata=dict(python=dict(type="dataType", value="int"))))
 
         en = ReverseEntity(**d)
-        self.assertEqual(en.type, "MyJSONType")
-        self.assertEqual(en.id, "MyJSONTypeID")
+        self.assertEqual(getattr(en, "type"), "MyJSONType")
+        self.assertEqual(getattr(en, "id"), "MyJSONTypeID")
         self.assertEqual(en.payload, dict(variableName=dict(
             type="number", value=1, metadata=dict(python=dict(type="dataType", value="int")))))
 
@@ -39,16 +39,16 @@ class TestReverseEntity(unittest.TestCase):
         d = dict(type="MyJSONType", id="MyJSONTypeID")
 
         en = ReverseEntity(**d)
-        self.assertEqual(en.type, "MyJSONType")
-        self.assertEqual(en.id, "MyJSONTypeID")
+        self.assertEqual(getattr(en, "type"), "MyJSONType")
+        self.assertEqual(getattr(en, "id"), "MyJSONTypeID")
         self.assertEqual(en.payload, {})
 
     def test_ReverseEntitiysetObejctInstantiate(self):
         d = dict(type="MyJSONType", id="MyJSONTypeID", variableName=dict(
             type="number", value=1, metadata=dict(python=dict(type="dataType", value="int"))))
         en = ReverseEntity(**d)
-        self.assertEqual(en.type, "MyJSONType")
-        self.assertEqual(en.id, "MyJSONTypeID")
+        self.assertEqual(getattr(en, "type"), "MyJSONType")
+        self.assertEqual(getattr(en, "id"), "MyJSONTypeID")
         self.assertEqual(en.payload, dict(variableName=dict(
             type="number", value=1, metadata=dict(python=dict(type="dataType", value="int")))))
 
@@ -62,8 +62,8 @@ class TestReverseEntity(unittest.TestCase):
         d = dict(type="MyJSONType", id="MyJSONTypeID", variableName=dict(
             type="number", value=1.5, metadata=dict(python=dict(type="dataType", value="float"))))
         en = ReverseEntity(**d)
-        self.assertEqual(en.type, "MyJSONType")
-        self.assertEqual(en.id, "MyJSONTypeID")
+        self.assertEqual(getattr(en, "type"), "MyJSONType")
+        self.assertEqual(getattr(en, "id"), "MyJSONTypeID")
         self.assertEqual(en.payload, dict(variableName=dict(
             type="number", value=1.5, metadata=dict(python=dict(type="dataType", value="float")))))
 
@@ -78,8 +78,8 @@ class TestReverseEntity(unittest.TestCase):
         d = dict(type="MyJSONType", id="MyJSONTypeID", variableName=dict(
             type="number", value=1.5, metadata=dict(python=dict(type="dataType", value="float"))))
         en = ReverseEntity(**d)
-        self.assertEqual(en.type, "MyJSONType")
-        self.assertEqual(en.id, "MyJSONTypeID")
+        self.assertEqual(getattr(en, "type"), "MyJSONType")
+        self.assertEqual(getattr(en, "id"), "MyJSONTypeID")
         self.assertEqual(en.payload, dict(variableName=dict(
             type="number", value=1.5, metadata=dict(python=dict(type="dataType", value="float")))))
 
@@ -94,8 +94,8 @@ class TestReverseEntity(unittest.TestCase):
         d = dict(type="MyJSONType", id="MyJSONTypeID", variableName=dict(
             type="number", value=1.5, metadata=dict(python=dict(type="dataType", value="float"))))
         en = ReverseEntity(**d)
-        self.assertEqual(en.type, "MyJSONType")
-        self.assertEqual(en.id, "MyJSONTypeID")
+        self.assertEqual(getattr(en, "type"), "MyJSONType")
+        self.assertEqual(getattr(en, "id"), "MyJSONTypeID")
         self.assertEqual(en.payload, dict(variableName=dict(
             type="number", value=1.5, metadata=dict(python=dict(type="dataType", value="float")))))
 

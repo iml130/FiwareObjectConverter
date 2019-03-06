@@ -20,7 +20,7 @@ __status__ = "Developement"
 
 from reverseEntityAttribute import ReverseEntityAttribute
 
-MISMATCH_MESSAGE = "The Class-Type does not match with the JSON-type!"
+MISMATCH_MESSAGE = "The Class-Type does not match with the JSON-type ({} != {})"
 
 
 class ReverseEntity(object):
@@ -30,7 +30,7 @@ class ReverseEntity(object):
         'setAttr' is here explicitly used, if set to true.
     """
 
-    def __init__(self, type, id, *args, **payload):
+    def __init__(self, type=None, id=None, *args, **payload):
         self.type = type
         self.id = id
         self.payload = payload
@@ -52,6 +52,6 @@ class ReverseEntity(object):
                 else:
                     val = rea.getValue()
                     if type(obj.__dict__[key]) is not type(val):
-                        raise TypeError(MISMATCH_MESSAGE)
+                        raise TypeError(MISMATCH_MESSAGE.format(type(obj.__dict__[key]), type(val)))
                     else:
                         obj.__dict__[key] = val

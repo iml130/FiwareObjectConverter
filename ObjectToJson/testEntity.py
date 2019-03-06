@@ -50,6 +50,13 @@ class Test_JsonConverter(unittest.TestCase):
         self.assertEqual(en.type, "This should NOT be overwritten")
         self.assertEqual(en.__dict__['value'].value, 1)
 
+    def test_Entitiy_setObejct_Non_Primitve_WITH_OUT_type_id(self):
+        en = Entity()
+        en.setObject(TestClass(), {}, False, showIdValue=False)
+        self.assertFalse(hasattr(en, "id"))
+        self.assertFalse(hasattr(en, "type"))
+        self.assertEqual(en.__dict__['value'].value, 1)
+
 
 class TestClass(object):
     def __init__(self):

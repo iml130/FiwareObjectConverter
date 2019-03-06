@@ -35,7 +35,7 @@ class Entity(object):
         self.type = self.__class__.__name__
         self.id = self.type + str(uuid.uuid4())
 
-    def setObject(self, _object, dataTypeDict, ignorePythonMetaData, showIdValue = True ):
+    def setObject(self, _object, dataTypeDict, ignorePythonMetaData, showIdValue=True):
         # Clear own dictionary
         self.__dict__.clear()
         try:

@@ -73,6 +73,15 @@ class Test_JsonConverter(unittest.TestCase):
 
         self.assertEqual(tc.val, 1)
 
+    def test_2Fiware2Obj_WithOut_ID_Value(self):
+        json = ObjectFiwareConverter.obj2Fiware(TestClass(), showIdValue=False)
+
+        tc = TestClass()
+        tc.val = 42
+        ObjectFiwareConverter.fiware2Obj(json, tc)
+
+        self.assertEqual(tc.val, 1)
+
     def test_IntegerType(self): ### TODO Accept Integers and other primitives?
         json = """{"id":"Task1","type":"Task","task":{"type":"Integer","value":0}}"""
         tc = TestClass()

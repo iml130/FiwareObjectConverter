@@ -35,7 +35,7 @@ class ObjectFiwareConverter(object):
     """
 
     @classmethod
-    def obj2Fiware(clsself, _object, ind=0, dataTypeDict={}, ignorePythonMetaData=True, showIdValue = True): 
+    def obj2Fiware(clsself, _object, ind=0, dataTypeDict={}, ignorePythonMetaData=False, showIdValue=True): 
         en = Entity()
         en.setObject(_object, dataTypeDict, ignorePythonMetaData, showIdValue= showIdValue)
         return clsself._json(en, ind)
