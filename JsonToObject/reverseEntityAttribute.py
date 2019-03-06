@@ -28,6 +28,16 @@ TEXT_TYPES = ["string",  "text"]
 BOOLEAN_TYPES = ["bool",  "boolean"]
 ARRAYLIKE_TYPES = ["array", "list", "tuple", "vector"]
 OBJECTLIKE_TYPES = ["object", "obj"]
+try: 
+    # Python 2
+    WHOLE_NUMBERS = [int, long]
+    STRING_TYPES = [unicode, str]
+    COMPLEX_TYPES = [complex, tuple, list]
+except NameError:
+    # Python 3
+    WHOLE_NUMBERS = [int]
+    STRING_TYPES = [str]
+    COMPLEX_TYPES = [complex, tuple, list]
 
 
 class ReverseEntityAttribute(object):
@@ -67,11 +77,11 @@ class ReverseEntityAttribute(object):
             self._setValue(float, _dict['value'])
             if self.value % 1 == 0.0: 
                 # Number is Integer Like, convert to int or long
-                self._setValueWithMetadata([int, long], useMetadata, _dict, self.value)
+                self._setValueWithMetadata(WHOLE_NUMBERS, useMetadata, _dict, self.value)
 
         elif _dict['type'].lower() in TEXT_TYPES:
             # Case String or Unicode
-            self._setValueWithMetadata([unicode, str], useMetadata, _dict, _dict['value'])
+            self._setValueWithMetadata(STRING_TYPES, useMetadata, _dict, _dict['value'])
 
         elif _dict['type'].lower() in ARRAYLIKE_TYPES:
             # Case Complex, Tuple or List
@@ -83,23 +93,23 @@ class ReverseEntityAttribute(object):
                 tempValue.append(re.getValue())
 
             # Second: decide if Complex, Tuple or List
-            self._setValueWithMetadata([complex, tuple, list], useMetadata, _dict, tempValue)
+            self._setValueWithMetadata(COMPLEX_TYPES, useMetadata, _dict, tempValue)
 
         elif _dict['type'].lower() in OBJECTLIKE_TYPES:
             # arbitary JSON object with key, value
             tempDict = _dict['value']
             self.value = {}
-            for key, value in tempDict.iteritems():
+            for key, value in tempDict.items():
                 rea = ReverseEntityAttribute(value, useMetadata)
                 self.value[key] = rea.getValue()
 
         else:
             # Maybe a class with key, value or another JSON object, check if you can iterate!
-            if (not hasattr(_dict['value'], 'iteritems')):
+            if (not hasattr(_dict['value'], 'items')):
                 raise ValueError("Unknown Object-Type: " + _dict['type'] + ". And it is not possible to iterate over this Object-Type!")
 
             tempDict = {}
-            for key, value in _dict['value'].iteritems():
+            for key, value in _dict['value'].items():
                 rea = ReverseEntityAttribute(value, useMetadata)
                 tempDict[key] = rea.getValue()
             self.value = tempDict

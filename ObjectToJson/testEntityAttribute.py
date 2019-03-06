@@ -20,8 +20,10 @@ __status__ = "Developement"
 
 import unittest
 import json
-from entityAttribute import EntityAttribute as EA
-from entity import Entity
+import sys
+
+from ObjectToJson.entityAttribute import EntityAttribute as EA
+from ObjectToJson.entity import Entity
 
 
 class TestEntityAttribute(unittest.TestCase):
@@ -59,10 +61,14 @@ class TestEntityAttribute(unittest.TestCase):
         self.assertEqual(ea.type, "number")
 
     def test_EntityAttributeLong(self):
-        ea = EA(42L, False)
-        self.assertEqual(ea.metadata, dict(
-            python=dict(type="dataType", value="long")))
-        self.assertEqual(ea.value, 42L)
+        ea = EA(123456789123456789123456789, False) # Evaluates to Long in Python 2
+        if sys.version_info <= (3,0):
+            self.assertEqual(ea.metadata, dict(
+                python=dict(type="dataType", value="long")))
+        else:
+            self.assertEqual(ea.metadata, dict(
+                python=dict(type="dataType", value="int")))
+        self.assertEqual(ea.value, 123456789123456789123456789)
         self.assertEqual(ea.type, "number")
 
     def test_EntityAttributeComplex(self):
@@ -88,8 +94,9 @@ class TestEntityAttribute(unittest.TestCase):
 
     def test_EntityAttributeUnicode(self):
         ea = EA(u'Unicode', False)
-        self.assertEqual(ea.metadata, dict(
-            python=dict(type="dataType", value="unicode")))
+        if sys.version_info <= (3,0): # Python2 distinguishes between str and unicode 
+            self.assertEqual(ea.metadata, dict(
+                python=dict(type="dataType", value="unicode")))
         self.assertEqual(ea.value, u'Unicode')
         self.assertEqual(ea.type, "string")
 

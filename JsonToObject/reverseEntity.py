@@ -18,7 +18,7 @@ __maintainer__ = "Dominik Lux"
 __version__ = "0.0.1a"
 __status__ = "Developement"
 
-from reverseEntityAttribute import ReverseEntityAttribute
+from JsonToObject.reverseEntityAttribute import ReverseEntityAttribute
 
 MISMATCH_MESSAGE = "The Class-Type does not match with the JSON-type ({} != {})"
 
@@ -40,7 +40,7 @@ class ReverseEntity(object):
         setattr(obj, 'id', str(self.id))
         setattr(obj, 'type', str(self.type))
         
-        for key, value in self.payload.iteritems():
+        for key, value in self.payload.items():
             rea = ReverseEntityAttribute(value, useMetadata)
             if (setAttr):
                 # Just use setAttr

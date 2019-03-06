@@ -19,7 +19,7 @@ __version__ = "0.0.1a"
 __status__ = "Developement"
 
 import unittest
-from entity import Entity
+from ObjectToJson.entity import Entity
 
 
 class Test_JsonConverter(unittest.TestCase):

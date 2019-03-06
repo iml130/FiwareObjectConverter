@@ -18,6 +18,8 @@ __maintainer__ = "Dominik Lux"
 __version__ = "0.0.1a"
 __status__ = "Developement"
 
+import sys
+
 
 class EntityAttribute():
     """ Here the actual Conversion to the correct JSON-Format happens 
@@ -26,6 +28,7 @@ class EntityAttribute():
     Additional information are given for some types, for a bidirectional Conversion.
 
     """
+    python_version = sys.version_info
 
     def __init__(self, _object, ipmd, concreteDataType=None):  
         self.value = _object
@@ -48,7 +51,7 @@ class EntityAttribute():
             self.type = "number"
             self.value = float(_object)
             self.setPythonMetaData(ipmd, "float")
-        elif objectType is long:
+        elif self.python_version < (3,0) and objectType is long: # Check explicitly if Python 2 is used
             self.type = "number"
             self.value = long(_object)
             self.setPythonMetaData(ipmd, "long")
@@ -60,7 +63,7 @@ class EntityAttribute():
         elif objectType is str:
             self.type = "string"
             self.value = str(_object)
-        elif objectType is unicode:
+        elif self.python_version < (3,0) and objectType is unicode: # Check explicitly if Python 2 is used
             self.type = "string"
             self.value = unicode(_object)
             self.setPythonMetaData(ipmd, "unicode")
@@ -78,7 +81,7 @@ class EntityAttribute():
         elif objectType is dict:
             self.type = "object"
             tempDict = {}
-            for key, value in _object.iteritems():
+            for key, value in _object.items():
                 tempDict[key] = EntityAttribute(value,ipmd )
             self.value = tempDict
         else:

@@ -32,7 +32,7 @@ class Test_JsonConverter(unittest.TestCase):
     def test_2Obj(self):
         json = """{"type": "TestClass", "id": "TestClass1", "val": {"type": "number", "value": 1, "metadata": {} } }"""
         tc = TestClass()
-        tc.val = 2L
+        tc.val = 123456789123456789123456789 # Evaluates automatically to Long for Python 2
         ObjectFiwareConverter.fiware2Obj(json, tc)
         self.assertEqual(tc.val, 1)
 

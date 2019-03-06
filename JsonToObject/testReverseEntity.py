@@ -20,7 +20,7 @@ __status__ = "Developement"
 
 import unittest
 
-from reverseEntity import ReverseEntity
+from JsonToObject.reverseEntity import ReverseEntity
 
 
 class TestReverseEntity(unittest.TestCase):

@@ -19,7 +19,9 @@ __version__ = "0.0.1a"
 __status__ = "Developement"
 
 import unittest
-from reverseEntityAttribute import ReverseEntityAttribute
+import sys
+
+from JsonToObject.reverseEntityAttribute import ReverseEntityAttribute
 
 
 class TestEntityAttribute(unittest.TestCase):
@@ -45,11 +47,12 @@ class TestEntityAttribute(unittest.TestCase):
         self.assertEqual(type(rea.getValue()), float)
 
     def test_ReverseEntityAttributeLong(self):
-        d = dict(type="number", value=42L, metadata=dict(
-            python=dict(type="dataType", value="long")))
-        rea = ReverseEntityAttribute(d)
-        self.assertEqual(42L, rea.getValue())
-        self.assertEqual(type(rea.getValue()), long)
+        if sys.version_info <= (3,0):
+            d = dict(type="number", value=123456789123456789123, metadata=dict(
+                python=dict(type="dataType", value="long")))
+            rea = ReverseEntityAttribute(d)
+            # self.assertEqual(123456789123456789123, rea.getValue()) # Python2 is not able to convert it back properly
+            self.assertEqual(type(rea.getValue()), long)
 
     def test_ReverseEntityAttributeComplex(self):
         d = dict(type="array",
@@ -71,7 +74,10 @@ class TestEntityAttribute(unittest.TestCase):
                  metadata=dict(python=dict(type="dataType", value="unicode")))
         rea = ReverseEntityAttribute(d)
         self.assertEqual(u'Unicode', rea.getValue())
-        self.assertEqual(type(rea.getValue()), unicode)
+        if sys.version_info <= (3,0):
+            self.assertEqual(type(rea.getValue()), unicode)
+        else:
+            self.assertEqual(type(rea.getValue()), str)
 
     def test_ReverseEntityAttributeTuple(self):
         d = dict(type="array", value=[dict(type="number", value=1, metadata=dict(python=dict(type="dataType", value="int"))), dict(

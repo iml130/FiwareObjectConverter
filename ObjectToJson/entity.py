@@ -19,7 +19,7 @@ __version__ = "0.0.1a"
 __status__ = "Developement"
 
 import uuid
-from entityAttribute import EntityAttribute
+from ObjectToJson.entityAttribute import EntityAttribute
 
 ERROR_MESSAGE_ATTTRIBUTE = 'Error setting Object in \'setObject\' : '
 
