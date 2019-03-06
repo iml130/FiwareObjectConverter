@@ -41,8 +41,12 @@ class ObjectFiwareConverter(object):
         return clsself._json(en, ind)
 
     @classmethod
-    def fiware2Obj(clsself, _fiware_str, _objectStructure={}, useMetadata=True, ignoreWrongDataType=False, setAttr=False):
-        jsonObj = clsself._obj(_fiware_str)
+    def fiware2Obj(clsself, _fiwareEntity, _objectStructure={}, useMetadata=True, ignoreWrongDataType=False, setAttr=False):
+        jsonObj= None
+        if(type(_fiwareEntity) is str):
+            jsonObj = clsself._obj(_fiwareEntity)
+        else:
+            jsonObj = _fiwareEntity
         re = ReverseEntity(**jsonObj)
         return re.setObject(_objectStructure, useMetadata, ignoreWrongDataType, setAttr) 
 
