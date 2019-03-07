@@ -43,13 +43,13 @@ except NameError:
 class ReverseEntityAttribute(object):
     """ Here the actual Conversion happens. 
         By initiliazing the class, the _dict is translated into the 
-        primitive datatypes. With the variable useMetadata the metadata can be ignored
+        primitive datatypes. With the variable useMetaData the metadata can be ignored
         It defaults then from:
         Complex, Tuple -> List
         Unicode -> String
     """
 
-    def __init__(self, _dict, useMetadata=True):
+    def __init__(self, _dict, useMetaData=True):
         """ By initializing we set the value in self.value
         """
         self.value = None
@@ -62,7 +62,7 @@ class ReverseEntityAttribute(object):
             raise ValueError(TYPE_VALUE_METADATA_NOT_DEFINED_MESSAGE)
 
         if not 'metadata' in _dict:
-            useMetadata=False
+            useMetaData=False
 
 
         # Back Conversion:
@@ -77,11 +77,11 @@ class ReverseEntityAttribute(object):
             self._setValue(float, _dict['value'])
             if self.value % 1 == 0.0: 
                 # Number is Integer Like, convert to int or long
-                self._setValueWithMetadata(WHOLE_NUMBERS, useMetadata, _dict, self.value)
+                self._setValueWithMetadata(WHOLE_NUMBERS, useMetaData, _dict, self.value)
 
         elif _dict['type'].lower() in TEXT_TYPES:
             # Case String or Unicode
-            self._setValueWithMetadata(STRING_TYPES, useMetadata, _dict, _dict['value'])
+            self._setValueWithMetadata(STRING_TYPES, useMetaData, _dict, _dict['value'])
 
         elif _dict['type'].lower() in ARRAYLIKE_TYPES:
             # Case Complex, Tuple or List
@@ -89,18 +89,18 @@ class ReverseEntityAttribute(object):
             tempList = _dict['value']
             tempValue = list()
             for value in tempList:
-                re = ReverseEntityAttribute(value, useMetadata)
+                re = ReverseEntityAttribute(value, useMetaData)
                 tempValue.append(re.getValue())
 
             # Second: decide if Complex, Tuple or List
-            self._setValueWithMetadata(COMPLEX_TYPES, useMetadata, _dict, tempValue)
+            self._setValueWithMetadata(COMPLEX_TYPES, useMetaData, _dict, tempValue)
 
         elif _dict['type'].lower() in OBJECTLIKE_TYPES:
             # arbitary JSON object with key, value
             tempDict = _dict['value']
             self.value = {}
             for key, value in tempDict.items():
-                rea = ReverseEntityAttribute(value, useMetadata)
+                rea = ReverseEntityAttribute(value, useMetaData)
                 self.value[key] = rea.getValue()
 
         else:
@@ -110,7 +110,7 @@ class ReverseEntityAttribute(object):
 
             tempDict = {}
             for key, value in _dict['value'].items():
-                rea = ReverseEntityAttribute(value, useMetadata)
+                rea = ReverseEntityAttribute(value, useMetaData)
                 tempDict[key] = rea.getValue()
             self.value = tempDict
 
@@ -132,12 +132,12 @@ class ReverseEntityAttribute(object):
             self.value = targetType(*value)
 
 
-    def _setValueWithMetadata(self, targetTypes, useMetadata, readict, value):
+    def _setValueWithMetadata(self, targetTypes, useMetaData, readict, value):
         """ This function sets the Value, dependent on the given metadata.
             If no metadata is given or it does not contain the correct format,
             we default to the last element of targetTypes
         """
-        if useMetadata and 'python' in readict['metadata']:
+        if useMetaData and 'python' in readict['metadata']:
             metadata = readict['metadata']
 
             # we try to find a valid dataType

@@ -40,7 +40,7 @@ class Test_JsonConverter(unittest.TestCase):
         json = """{"type":"TestClass","id":"ID","val":{"type":"string","value":"i am unicode","metadata":{"python":{"type":"dataType","value":"unicode"}}}}"""
         tc = TestClass()
         tc.val = str(" ")
-        ObjectFiwareConverter.fiware2Obj(json, tc, useMetadata=False)
+        ObjectFiwareConverter.fiware2Obj(json, tc, useMetaData=False)
         self.assertEqual(type(tc.val), str)
         self.assertEqual(tc.val, "i am unicode")  # Not unicode
 
@@ -48,7 +48,7 @@ class Test_JsonConverter(unittest.TestCase):
         json = """{"type":"TestClass","id":"ID","val":{"type":"string","value":"i am unicode","metadata":{"python":{"type":"dataType","value":"unicode"}}}}"""
         tc = TestClass()
         ObjectFiwareConverter.fiware2Obj(
-            json, tc, useMetadata=False, ignoreWrongDataType=True)
+            json, tc, useMetaData=False, ignoreWrongDataType=True)
         self.assertEqual(type(tc.val), str)
         self.assertEqual(tc.val, "i am unicode")  # Not unicode
 
@@ -60,7 +60,7 @@ class Test_JsonConverter(unittest.TestCase):
                 ,"metadata": {"python": {"type": "dataType","value": "complex"}}}}"""
         tc = TestClass()
         tc.val = list()
-        ObjectFiwareConverter.fiware2Obj(json, tc, useMetadata=False)
+        ObjectFiwareConverter.fiware2Obj(json, tc, useMetaData=False)
         self.assertEqual(type(tc.val), list)
         self.assertEqual(tc.val, [0, 2.1])  # Not unicode
 

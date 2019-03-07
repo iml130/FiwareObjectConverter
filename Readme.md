@@ -1,6 +1,6 @@
 # FiwareObjectConverter (FOC)
 
-This is a simple implementation to serialize Python2.7-Objects into a [Fiware-Entity](https://www.fiware.org/wp-content/uploads/2016/12/2_FIWARE-NGSI-Managing-Context-Information-at-large-scale.pdf) and back. The generated JSON-Strings can be POSTed to their API.
+This is a simple implementation to serialize Python2- and -3-Objects into a [Fiware-Entity](https://www.fiware.org/wp-content/uploads/2016/12/2_FIWARE-NGSI-Managing-Context-Information-at-large-scale.pdf) and back. The generated JSON-Strings can be POSTed to their API.
 
 There is also the posibillity to ignore the Metadata while parsing back to the (specified) Python-Object.
 
@@ -61,6 +61,29 @@ This is a simple class for demonstration. The Data-Structure can be arbitrary co
 
 The `"type"`- and `"id"`-values can be set manually. To do so, just add `self.type = "YOUR_TYPE"` and/or `self.id = "YOUR_ID"` to `FooBar`.
 
+You also have the option to not set the `id` and `value`. Just do the following:
+
+```python
+json = ObjectFiwareConverter.obj2Fiware(FooBar(), ind=4, showIdValue=False)
+```
+which would just create: 
+
+```json
+{
+    "myStr": {
+        "type": "string",
+        "value": "Hi!",
+        "metadata": {
+            "python": {
+                "type": "dataType",
+                "value": "unicode"
+            }
+        }
+    }
+}
+```
+(E.g.: This `json`-string can be PATCHed to the `v2-Api` of the [Context-Broker](https://fiware-orion.readthedocs.io/en/master/user/walkthrough_apiv2/#update-entity))
+
 ### FiwareEntity 2 Object
 A (Representation-) Class is needed to convert it back. Let's set a Class and then parse the JSON-Object into it:
 
@@ -83,13 +106,13 @@ Missing variables which are defined by the JSON-String are ignored if not set in
 type = ClassName
 id = ClassName + Universally Unique Identifier (UUID)
 ```
-The `id` consist of the Class-Name `+` a random generated `uuid` by [uuid4()](https://docs.python.org/2/library/uuid.html) and the type is simply the Class-Name. Also: All Objects, which are converted back from json will contain an `id` and `type` Attribute. They can be accessed with `getattr`.
+The `id` consist of the Class-Name `+` a random generated `uuid` by [uuid4()](https://docs.python.org/2/library/uuid.html) and the type is simply the Class-Name. Also: All Objects, which are converted back from json may contain an `id` and `type` Attribute. They can be accessed with `getattr`, if
 
-#### Ignoring Metadata
+#### Ignoring MetaData/Additional MetaData and excluding MetaDAta
 To ignore the metadata, do the following:
 ```python 
 mvofb = MyVeryOwnFooBar()
-ObjectFiwareConverter.fiware2Obj(json, mvofb, useMetadata=False) # the json from above
+ObjectFiwareConverter.fiware2Obj(json, mvofb, useMetaData=False) # the json from above
 ```
 The conversion between a Python-Object and a JSON-String is not bidirectional by ignoring the `metadata`. 
 By ignoring the `metadata` some Python-DataTypes are "converted into a simple type":
@@ -97,13 +120,18 @@ By ignoring the `metadata` some Python-DataTypes are "converted into a simple ty
 Complex, Tuple --> List
 Unicode        --> String
 ```
+
+NOTE: Python3's strings are already unicode by default, so here nothing is changed. Additionally `long`-types no longer exists. Those are then set as `int`
+
 ---
 NOTE:
 The above example will throw an `TypeError`, because the class `MyVeryOwnFooBar` awaits an `unicode` but would be overwritten with a string, because the `metadata` is ignored. This behaviour can be turned off with the following: 
 ```python 
 mvofb = MyVeryOwnFooBar()
-ObjectFiwareConverter.fiware2Obj(json, mvofb, useMetadata=False, ignoreWrongDataType=True) # the json from above
+ObjectFiwareConverter.fiware2Obj(json, mvofb, useMetaData=False, ignoreWrongDataType=True) # the json from above
 ```
+
+
 ---
 It is also possible to give a Data-Type-Object-Structure while converting to json. Simply create a `dict` containing the concrete Data-Type for Data and the additional Information will be added into the Metadata.
 
@@ -154,6 +182,28 @@ wolud result to:
 }
 
 ```
+---
+To exclude the `python`-metadata, while creating the `json`. You can use `ignorePythonMetaData=True` as here:
+```python
+json = ObjectFiwareConverter.obj2Fiware(FooBar(), ind=4, ignorePythonMetaData=True) # json fron above
+```
+This creates simply the following `json`:
+
+```json
+{
+    "myStr": {
+        "type": "string",
+        "value": "Hi!"
+        },
+    "type": "FooBar",
+    "id": "FooBarbc86c90d-6cca-41c3-878e-cbb58908056c"
+}
+```
+
+
+---
+
+
 At last, if you simply cannot create a class which contains the needed values (or everything is dynamically), just use the `setAttr`- Parameter.
 
 
