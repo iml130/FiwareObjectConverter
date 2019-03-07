@@ -18,7 +18,7 @@ __maintainer__ = "Dominik Lux"
 __version__ = "0.0.1a"
 __status__ = "Developement"
 
-from JsonToObject.reverseEntityAttribute import ReverseEntityAttribute
+from .reverseEntityAttribute import ReverseEntityAttribute
 
 MISMATCH_MESSAGE = "The Class-Type does not match with the JSON-type ({} != {})"
 

@@ -23,8 +23,8 @@ __maintainer__ = "Dominik Lux"
 __version__ = "0.0.1a"
 __status__ = "Developement"
 
-from JsonToObject.reverseEntity import ReverseEntity
-from ObjectToJson.entity import Entity
+from .JsonToObject.reverseEntity import ReverseEntity
+from .ObjectToJson.entity import Entity
 import json
 
 

@@ -19,9 +19,9 @@ __version__ = "0.0.1a"
 __status__ = "Developement"
 
 import unittest
-from objectFiwareConverter import ObjectFiwareConverter
-from ObjectToJson.entity import Entity
-from JsonToObject.reverseEntity import ReverseEntity
+from .objectFiwareConverter import ObjectFiwareConverter
+from .ObjectToJson.entity import Entity
+from .JsonToObject.reverseEntity import ReverseEntity
 
 
 class Test_JsonConverter(unittest.TestCase):
