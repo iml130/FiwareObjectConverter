@@ -101,6 +101,9 @@ class EntityAttribute():
             self.setPythonMetaData(ipmd, "class")
             tempDict = {}
             for key in iterL:
+                if key.startswith('_'):
+                    continue
+                
                 tempDict[key] = EntityAttribute(getattr(_object, key), ipmd)
             self.value = tempDict
 
