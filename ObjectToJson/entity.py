@@ -19,7 +19,11 @@ __version__ = "0.0.1a"
 __status__ = "Developement"
 
 import uuid
-from .entityAttribute import EntityAttribute
+
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+from entityAttribute import EntityAttribute
+
 
 ERROR_MESSAGE_ATTTRIBUTE = 'Error setting Object in \'setObject\' : '
 

@@ -19,8 +19,15 @@ __version__ = "0.0.1a"
 __status__ = "Developement"
 
 import unittest
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+from reverseEntity import ReverseEntity
 
-from .reverseEntity import ReverseEntity
+sys.path.pop(0)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+from ObjectToJson.entity import Entity
+
+
 
 
 class TestReverseEntity(unittest.TestCase):

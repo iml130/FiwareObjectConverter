@@ -21,7 +21,13 @@ __status__ = "Developement"
 import unittest
 import sys
 
-from .reverseEntityAttribute import ReverseEntityAttribute
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+from reverseEntityAttribute import ReverseEntityAttribute
+
+sys.path.pop(0)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+from ObjectToJson.entity import Entity
 
 
 class TestEntityAttribute(unittest.TestCase):

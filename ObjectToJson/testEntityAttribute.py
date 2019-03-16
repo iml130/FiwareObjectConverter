@@ -20,10 +20,12 @@ __status__ = "Developement"
 
 import unittest
 import json
-import sys
 
-from .entityAttribute import EntityAttribute as EA
-from .entity import Entity
+import os
+import sys
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+from entityAttribute import EntityAttribute as EA
+from entity import Entity
 
 
 class TestEntityAttribute(unittest.TestCase):

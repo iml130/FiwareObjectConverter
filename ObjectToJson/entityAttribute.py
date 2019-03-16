@@ -17,9 +17,7 @@ __credits__ = ["Peter Detzner"]
 __maintainer__ = "Dominik Lux"
 __version__ = "0.0.1a"
 __status__ = "Developement"
-
 import sys
-
 
 class EntityAttribute():
     """ Here the actual Conversion to the correct JSON-Format happens 

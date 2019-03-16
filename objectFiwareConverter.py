@@ -22,10 +22,13 @@ __credits__ = ["Peter Detzner"]
 __maintainer__ = "Dominik Lux"
 __version__ = "0.0.1a"
 __status__ = "Developement"
-
-from .JsonToObject.reverseEntity import ReverseEntity
-from .ObjectToJson.entity import Entity
+import os
+import sys
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+from JsonToObject.reverseEntity import ReverseEntity
+from ObjectToJson.entity import Entity
 import json
+
 
 
 class ObjectFiwareConverter(object):

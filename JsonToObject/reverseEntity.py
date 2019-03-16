@@ -17,8 +17,10 @@ __credits__ = ["Peter Detzner"]
 __maintainer__ = "Dominik Lux"
 __version__ = "0.0.1a"
 __status__ = "Developement"
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+from reverseEntityAttribute import ReverseEntityAttribute
 
-from .reverseEntityAttribute import ReverseEntityAttribute
 
 MISMATCH_MESSAGE = "The Class-Type does not match with the JSON-type ({} != {})"
 

@@ -19,9 +19,16 @@ __version__ = "0.0.1a"
 __status__ = "Developement"
 
 import unittest
-from .objectFiwareConverter import ObjectFiwareConverter
-from .ObjectToJson.entity import Entity
-from .JsonToObject.reverseEntity import ReverseEntity
+import os
+import sys
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+from objectFiwareConverter import ObjectFiwareConverter
+from ObjectToJson.entity import Entity
+from JsonToObject.reverseEntity import ReverseEntity
+sys.path.pop(0)
+
+
+
 
 
 class Test_JsonConverter(unittest.TestCase):

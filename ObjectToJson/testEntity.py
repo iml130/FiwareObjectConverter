@@ -19,8 +19,10 @@ __version__ = "0.0.1a"
 __status__ = "Developement"
 
 import unittest
-from .entity import Entity
 
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+from entity import Entity
 
 class Test_JsonConverter(unittest.TestCase):
 
