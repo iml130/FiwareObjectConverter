@@ -23,9 +23,14 @@ __maintainer__ = "Dominik Lux"
 __version__ = "0.0.1a"
 __status__ = "Developement"
 
+import json
+import sys, os
+# Adding This Sub-Project into the PythonPath
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+
 from JsonToObject.reverseEntity import ReverseEntity
 from ObjectToJson.entity import Entity
-import json
+
 
 
 class ObjectFiwareConverter(object):
