@@ -74,7 +74,7 @@ class Entity(object):
                     # Object contains invalid key-name, ignore!
                     pass
                 else:
-                    self.__dict__[key] = EntityAttribute(value, ignorePythonMetaData, dataTypeDict.get(key)) 
+                    self.__dict__[key] = EntityAttribute(value, ignorePythonMetaData, dataTypeDict.get(key), baseEntity=True) 
         except AttributeError as ex:
             raise ValueError(ERROR_MESSAGE_ATTTRIBUTE, ex)
 

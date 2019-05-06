@@ -18,6 +18,14 @@ __maintainer__ = "Dominik Lux"
 __version__ = "0.0.1a"
 __status__ = "Developement"
 
+import base64
+import array
+try: 
+    import urllib.parse as quote
+except ImportError:
+    import urllib as quote
+
+
 ### Error Messages
 TYPE_VALUE_METADATA_NOT_DEFINED_MESSAGE = "One of the following is not defined in json: {type|value}"
 VALUE_EMPTY_MESSAGE = "The Value entered cannot be empty!"
@@ -102,6 +110,29 @@ class ReverseEntityAttribute(object):
             for key, value in tempDict.items():
                 rea = ReverseEntityAttribute(value, useMetaData)
                 self.value[key] = rea.getValue()
+
+        elif _dict['type'].lower() == "base64":
+            # Case we have a base64 String:
+            # First Unquote Special Characters
+            tempValue = quote.unquote(_dict['value'])
+
+            # Decode Base64 String into Bytes
+            tempValue = base64.b64decode(tempValue)
+
+            # Retrieve Information about int8 or uint8
+            if "metadata" in _dict and "dataType" in _dict["metadata"]:
+                datatype =  _dict['metadata']['dataType']['value']
+            else: 
+                raise ValueError("Unknown Object-Type: " + _dict['type'] + ". The MetaData does not specify what the actual DataType is.")
+
+            # convert back to integers
+            if datatype == "int8[]":
+                tempValue = array.array("b", tempValue)
+            else:
+                tempValue = array.array("B", tempValue)
+
+            # Change DataType to primitive python list
+            self.value = tempValue.tolist()
 
         else:
             # Maybe a class with key, value or another JSON object, check if you can iterate!

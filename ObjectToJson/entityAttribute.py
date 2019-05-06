@@ -19,7 +19,13 @@ __version__ = "0.0.1a"
 __status__ = "Developement"
 
 import sys
+import array
+import base64
 
+try: 
+    import urllib.parse as quote
+except ImportError:
+    import urllib as quote
 
 class EntityAttribute():
     """ Here the actual Conversion to the correct JSON-Format happens 
@@ -30,12 +36,13 @@ class EntityAttribute():
     """
     python_version = sys.version_info
 
-    def __init__(self, _object, ipmd, concreteDataType=None):  
+    def __init__(self, _object, ipmd, concreteDataType=None, baseEntity=False):  
         self.value = _object
         self.type = ""
         self.metadata = dict()
+        if baseEntity:
+            self.setConcreteMetaData(concreteDataType)
         objectType = type(_object)
-
 
         # Simply if-then-else to the Json fromat
         if(objectType is type(None)):
@@ -43,46 +50,58 @@ class EntityAttribute():
         elif objectType is bool:
             self.type = "boolean"
             self.value = bool(_object)
+            # self.setConcreteMetaData(concreteDataType)
         elif objectType is int:
             self.type = "number"
             self.value = int(_object)
             self.setPythonMetaData(ipmd, "int")
+            # self.setConcreteMetaData(concreteDataType)
         elif objectType is float:
             self.type = "number"
             self.value = float(_object)
             self.setPythonMetaData(ipmd, "float")
+            # self.setConcreteMetaData(concreteDataType)
         elif self.python_version < (3,0) and objectType is long: # Check explicitly if Python 2 is used
             self.type = "number"
             self.value = long(_object)
             self.setPythonMetaData(ipmd, "long")
+            # self.setConcreteMetaData(concreteDataType)
         elif objectType is complex:
             self.type = "array"
             t = complex(_object)
             self.value = [EntityAttribute(t.real, ipmd), EntityAttribute(t.imag, ipmd)]
             self.setPythonMetaData(ipmd, "complex")
+            # self.setConcreteMetaData(concreteDataType)
         elif objectType is str:
             self.type = "string"
             self.value = str(_object)
+            # self.setConcreteMetaData(concreteDataType)
         elif self.python_version < (3,0) and objectType is unicode: # Check explicitly if Python 2 is used
             self.type = "string"
             self.value = unicode(_object)
+            # self.setConcreteMetaData(concreteDataType)
             self.setPythonMetaData(ipmd, "unicode")
         elif objectType is tuple:
             self.type = "array"
             self.value = []
             self.setPythonMetaData(ipmd, "tuple")
+            self.setConcreteMetaData(concreteDataType)
             for item in _object:
                 self.value.append(EntityAttribute(item, ipmd))
         elif objectType is list:
             self.type = "array"
             self.value = []
+            self.setConcreteMetaData(concreteDataType)
             for item in _object:
                 self.value.append(EntityAttribute(item, ipmd))
         elif objectType is dict:
             self.type = "object"
             tempDict = {}
             for key, value in _object.items():
-                tempDict[key] = EntityAttribute(value,ipmd )
+                innerConcreteMetaData = None
+                if concreteDataType is not None and key in concreteDataType:
+                    innerConcreteMetaData = concreteDataType[key]
+                tempDict[key] = EntityAttribute(value, ipmd, innerConcreteMetaData)
             self.value = tempDict
         else:
             # Case it is a Class
@@ -94,22 +113,54 @@ class EntityAttribute():
             else:
                 raise ValueError("Cannot get attrs from {}".format(str(_object)))
 
-            if hasattr(_object, '_type'):   # ROS-Specific Type-Declaration
+            if hasattr(_object, '_type') and hasattr(_object, '_slot_types') and hasattr(_object, '__slots__'):   # ROS-Specific Type-Declaration
+                ### This is a special Class from ROS!
                 self.type = _object._type.replace("/", ".") # Needs to be replaced Fiware does not allow a '/'
+                self.setPythonMetaData(ipmd, "class")
+                # Special Case 'Image-like'-Data in ROS (very long 'int8[]'- and 'uint8[]' - arrays)
+                # These are converted into Base64 (escaped)
+                tempDict = {}
+                for key, key_type in zip(_object.__slots__, _object._slot_types):
+                    if key.startswith('_'):
+                        continue
+                    if (key_type == 'int8[]' or key_type == 'uint8[]') and len(getattr(_object, key)) >= 256: 
+                        # TODO DL 256 -> Threshold?
+                        # Generate Base64 String of the Array:
+                        tempDict[key] = EntityAttribute(None, ipmd)
+                        tempDict[key].type = "base64"
+
+                        # Either generate unsigned or signed byte-array
+                        if key_type == 'int8[]':
+                            tempDict[key].value = array.array('b', getattr(_object, key)).tostring()
+                        else:
+                            tempDict[key].value = array.array('B', getattr(_object, key)).tostring()
+                        
+                        # Form that Byte-Array: generate Base64 String
+                        tempDict[key].value = base64.b64encode(tempDict[key].value)
+
+                        # Escape Special Characters:
+                        tempDict[key].value = quote.quote(tempDict[key].value)
+                        tempDict[key].metadata = dict()
+                        self.setConcreteMetaData(concreteDataType[key], tempDict[key])
+                    else:
+                        innerConcreteMetaData = None
+                        if concreteDataType is not None and key in concreteDataType:
+                            innerConcreteMetaData = concreteDataType[key]
+                        tempDict[key] = EntityAttribute(getattr(_object, key), ipmd, innerConcreteMetaData)
+                self.value = tempDict
             else:
+                # Simple Class. Recursively retrieve the other values
                 self.type = _object.__class__.__name__
-            self.setPythonMetaData(ipmd, "class")
-            tempDict = {}
-            for key in iterL:
-                if key.startswith('_'):
-                    continue
-                tempDict[key] = EntityAttribute(getattr(_object, key), ipmd)
-            self.value = tempDict
-
-
-        if concreteDataType is not None:
-            self.metadata["dataType"] = dict(type="dataType", value=concreteDataType)
-            pass
+                self.setPythonMetaData(ipmd, "class")
+                tempDict = {}
+                for key in iterL:
+                    if key.startswith('_'):
+                        continue
+                    innerConcreteMetaData = None
+                    if concreteDataType is not None and key in concreteDataType:
+                        innerConcreteMetaData = concreteDataType[key]
+                    tempDict[key] = EntityAttribute(getattr(_object, key), ipmd, innerConcreteMetaData)
+                self.value = tempDict
 
         # Remove metadata-Attribute if it is empty (minimizing the JSON)
         if self.metadata == {} :
@@ -118,4 +169,9 @@ class EntityAttribute():
     def setPythonMetaData(self, ignorePythonMetaData, val):
         if not ignorePythonMetaData:
             self.metadata["python"] = dict(type="dataType", value=val)
-    
+
+    def setConcreteMetaData(self, val, obj= None):
+        if val is not None and obj is None:
+            self.metadata["dataType"] = dict(type="dataType", value=val)
+        elif val is not None:
+            obj.metadata["dataType"] = dict(type="dataType", value=val)

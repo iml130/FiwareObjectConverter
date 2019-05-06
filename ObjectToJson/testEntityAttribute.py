@@ -140,7 +140,7 @@ class TestEntityAttribute(unittest.TestCase):
         self.assertEqual(ea.type, "array")
 
     def test_EntityAttributeFloat32List_concreteDataType(self):
-        ea = EA(ClassInt(), True, concreteDataType=dict(int="uint32_t"))
+        ea = EA(ClassInt(), True, concreteDataType=dict(int="uint32_t"), baseEntity=True)
         self.assertTrue(hasattr(ea, 'metadata'))
         self.assertEqual(ea.metadata, dict(
             dataType=dict(type="dataType", value=dict(int='uint32_t'))))
@@ -196,6 +196,7 @@ class ClassSlotsInt(object):
 
 class RosClassWithSlotsInt(object):
     __slots__ = ['val1', '_type']
+    _slot_types = ['uint8', 'string']
     def __init__(self):
         self.val1 = 1
         self._type = "RosClass/Integer"  # Example-Type
