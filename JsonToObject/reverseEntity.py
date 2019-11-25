@@ -18,6 +18,10 @@ __maintainer__ = "Dominik Lux"
 __version__ = "0.0.1a"
 __status__ = "Developement"
 
+try: 
+    import urllib.parse as quote
+except ImportError:
+    import urllib as quote
 from JsonToObject.reverseEntityAttribute import ReverseEntityAttribute
 
 MISMATCH_MESSAGE = "The Class-Type does not match with the JSON-type ({} != {})"
@@ -35,13 +39,19 @@ class ReverseEntity(object):
         self.id = id
         self.payload = payload
 
-    def setObject(self, obj, useMetaData=True, ignoreWrongDataType=False, setAttr=False):
+    def setObject(self, obj, useMetaData=True, ignoreWrongDataType=False, setAttr=False, encoded=False):
         # Explicitly set id and type, always!
-        setattr(obj, 'id', str(self.id))
-        setattr(obj, 'type', str(self.type))
+        if encoded:
+            setattr(obj, 'id', str(self.id))
+            setattr(obj, 'type', str(self.type))
+        else:
+            setattr(obj, 'id', quote.unquote(str(self.id)))
+            setattr(obj, 'type', quote.unquote(str(self.type)))
+
+        
         
         for key, value in self.payload.items():
-            rea = ReverseEntityAttribute(value, useMetaData)
+            rea = ReverseEntityAttribute(value, useMetaData, encoded=encoded)
             if (setAttr):
                 # Just use setAttr
                 setattr(obj, key, rea.getValue())

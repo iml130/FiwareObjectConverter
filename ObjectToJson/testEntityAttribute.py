@@ -151,7 +151,14 @@ class TestEntityAttribute(unittest.TestCase):
         ea = EA(RosClassWithSlotsInt(), False)
         self.assertEqual(ea.metadata, dict(
             python=dict(type="dataType", value="class")))
-        self.assertEqual(ea.type, "RosClass.Integer") # Slashes are not allowed!
+        self.assertEqual(ea.type, "RosClass/Integer") # FOC should not touch it unless we encode!
+        self.assertTrue(ea.value != None)
+
+    def test_EntityAttributeForeignRosClassEncoded(self):
+        ea = EA(RosClassWithSlotsInt(), False, encode=True)
+        self.assertEqual(ea.metadata, dict(
+            python=dict(type="dataType", value="class")))
+        self.assertEqual(ea.type, "RosClass%2FInteger") # FOC should encode it
         self.assertTrue(ea.value != None)
 
 

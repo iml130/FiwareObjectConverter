@@ -57,7 +57,7 @@ class ReverseEntityAttribute(object):
         Unicode -> String
     """
 
-    def __init__(self, _dict, useMetaData=True):
+    def __init__(self, _dict, useMetaData=True, encoded=False):
         """ By initializing we set the value in self.value
         """
         self.value = None
@@ -71,6 +71,10 @@ class ReverseEntityAttribute(object):
 
         if not 'metadata' in _dict:
             useMetaData=False
+
+        if encoded:
+            _dict['type'] = quote.unquote(_dict['type'])
+
 
 
         # Back Conversion:
@@ -90,6 +94,8 @@ class ReverseEntityAttribute(object):
         elif _dict['type'].lower() in TEXT_TYPES:
             # Case String or Unicode
             self._setValueWithMetadata(STRING_TYPES, useMetaData, _dict, _dict['value'])
+            if encoded:
+                self.value = quote.unquote(self.value)
 
         elif _dict['type'].lower() in ARRAYLIKE_TYPES:
             # Case Complex, Tuple or List

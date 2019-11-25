@@ -19,6 +19,11 @@ __version__ = "0.0.1a"
 __status__ = "Developement"
 
 import uuid
+try: 
+    import urllib.parse as quote
+except ImportError:
+    import urllib as quote
+
 from ObjectToJson.entityAttribute import EntityAttribute
 
 ERROR_MESSAGE_ATTTRIBUTE = 'Error setting Object in \'setObject\' : '
@@ -35,7 +40,7 @@ class Entity(object):
         self.type = self.__class__.__name__
         self.id = self.type + str(uuid.uuid4())
 
-    def setObject(self, _object, dataTypeDict, ignorePythonMetaData, showIdValue=True):
+    def setObject(self, _object, dataTypeDict, ignorePythonMetaData, showIdValue=True, encode=False):
         # Clear own dictionary
         self.__dict__.clear()
         try:
@@ -74,9 +79,15 @@ class Entity(object):
                     # Object contains invalid key-name, ignore!
                     pass
                 else:
-                    self.__dict__[key] = EntityAttribute(value, ignorePythonMetaData, dataTypeDict.get(key), baseEntity=True) 
+                    self.__dict__[key] = EntityAttribute(value, ignorePythonMetaData, dataTypeDict.get(key), baseEntity=True, encode=encode) 
         except AttributeError as ex:
             raise ValueError(ERROR_MESSAGE_ATTTRIBUTE, ex)
+
+        # Encode in HTML (OCB Specific!)
+        if encode and showIdValue:
+            self.type = quote.quote(self.type, safe='')
+            self.id = quote.quote(self.id, safe='')
+
 
     def __repr__(self):
         return "Id: " + str(self.id) + ", Type: " + str(self.type)

@@ -39,7 +39,7 @@ class EntityAttribute():
     """
     python_version = sys.version_info
 
-    def __init__(self, _object, ipmd, concreteDataType=None, baseEntity=False):  
+    def __init__(self, _object, ipmd, concreteDataType=None, baseEntity=False, encode=False):  
         self.value = _object
         self.type = ""
         self.metadata = dict()
@@ -78,11 +78,18 @@ class EntityAttribute():
         elif objectType is str:
             # Thanks to ROS, Bytes are converted into 
             self.type = "string"
-            self.value = str(_object)
+            if not encode:
+                self.value = str(_object)
+            else:
+                self.value = quote.quote(str(_object), safe='')
+
             # self.setConcreteMetaData(concreteDataType)
         elif self.python_version < (3,0) and objectType is unicode: # Check explicitly if Python 2 is used
             self.type = "string"
-            self.value = unicode(_object)
+            if not encode:
+                self.value = unicode(_object)
+            else:
+                self.value = quote.quote(unicode(_object), safe='')
             # self.setConcreteMetaData(concreteDataType)
             self.setPythonMetaData(ipmd, "unicode")
         elif objectType is tuple:
@@ -91,13 +98,13 @@ class EntityAttribute():
             self.setPythonMetaData(ipmd, "tuple")
             self.setConcreteMetaData(concreteDataType)
             for item in _object:
-                self.value.append(EntityAttribute(item, ipmd))
+                self.value.append(EntityAttribute(item, ipmd, encode=encode))
         elif objectType is list:
             self.type = "array"
             self.value = []
             self.setConcreteMetaData(concreteDataType)
             for item in _object:
-                self.value.append(EntityAttribute(item, ipmd))
+                self.value.append(EntityAttribute(item, ipmd, encode=encode))
         elif objectType is dict:
             self.type = "object"
             tempDict = {}
@@ -105,7 +112,7 @@ class EntityAttribute():
                 innerConcreteMetaData = None
                 if concreteDataType is not None and key in concreteDataType:
                     innerConcreteMetaData = concreteDataType[key]
-                tempDict[key] = EntityAttribute(value, ipmd, innerConcreteMetaData)
+                tempDict[key] = EntityAttribute(value, ipmd, innerConcreteMetaData, encode=encode)
             self.value = tempDict
         else:
             # Case it is a Class
@@ -119,7 +126,11 @@ class EntityAttribute():
 
             if hasattr(_object, '_type') and hasattr(_object, '_slot_types') and hasattr(_object, '__slots__'):   # ROS-Specific Type-Declaration
                 ### This is a special CASE for ROS!!!!
-                self.type = _object._type.replace("/", ".") # Needs to be replaced Fiware does not allow a '/'
+                if not encode:
+                    self.type = _object._type
+                else:
+                    self.type = quote.quote(_object._type, safe='')
+
                 self.setPythonMetaData(ipmd, "class")
                 # Special Case 'Image-like'-Data in ROS (very long 'int8[]'- and 'uint8[]' - arrays)
                 # These are converted into Base64 (escaped)
@@ -130,7 +141,7 @@ class EntityAttribute():
                     if ('int8[' in key_type or 'uint8[' in key_type) and len(getattr(_object, key)) >= THRESH: 
                         # TODO DL 256 -> Threshold?
                         # Generate Base64 String of the Array:
-                        tempDict[key] = EntityAttribute(None, ipmd)
+                        tempDict[key] = EntityAttribute(None, ipmd, encode=encode)
                         tempDict[key].type = "base64"
 
                         # Either generate unsigned or signed byte-array
@@ -143,7 +154,7 @@ class EntityAttribute():
                         tempDict[key].value = base64.b64encode(tempDict[key].value)
 
                         # Escape Special Characters:
-                        tempDict[key].value = quote.quote(tempDict[key].value)
+                        tempDict[key].value = quote.quote(tempDict[key].value, safe='')
                         tempDict[key].metadata = dict()
                         self.setConcreteMetaData(concreteDataType[key], tempDict[key])
                     else:
@@ -166,7 +177,7 @@ class EntityAttribute():
                                 if toConvert is not None and len(toConvert) >= THRESH:
                                     # TODO DL 256 -> Threshold?
                                     # Generate Base64 String of the Array:
-                                    tempDict[key] = EntityAttribute(None, ipmd)
+                                    tempDict[key] = EntityAttribute(None, ipmd, encode=encode)
                                     tempDict[key].type = "base64"
 
                                     # Generate unsigned or byte-array
@@ -176,7 +187,7 @@ class EntityAttribute():
                                     tempDict[key].value = base64.b64encode(tempDict[key].value)
 
                                     # Escape Special Characters:
-                                    tempDict[key].value = quote.quote(tempDict[key].value)
+                                    tempDict[key].value = quote.quote(tempDict[key].value, safe='')
                                     tempDict[key].metadata = dict()
                                     self.setConcreteMetaData(innerConcreteMetaData, tempDict[key])
                                     alreadySet = True 
@@ -185,10 +196,10 @@ class EntityAttribute():
                                 # Something else we should convert
                                 toConvert = getattr(_object, key)
                             if alreadySet is False:
-                                tempDict[key] = EntityAttribute(toConvert, ipmd, innerConcreteMetaData)
+                                tempDict[key] = EntityAttribute(toConvert, ipmd, innerConcreteMetaData, encode=encode)
                         else:
                             # Just get its child and convert it 
-                            tempDict[key] = EntityAttribute(getattr(_object, key), ipmd, None)
+                            tempDict[key] = EntityAttribute(getattr(_object, key), ipmd, None, encode=encode)
                 self.value = tempDict
             else:
                 # Simple Class. Recursively retrieve the other values
@@ -201,7 +212,7 @@ class EntityAttribute():
                     innerConcreteMetaData = None
                     if concreteDataType is not None and key in concreteDataType:
                         innerConcreteMetaData = concreteDataType[key]
-                    tempDict[key] = EntityAttribute(getattr(_object, key), ipmd, innerConcreteMetaData)
+                    tempDict[key] = EntityAttribute(getattr(_object, key), ipmd, innerConcreteMetaData, encode=encode)
                 self.value = tempDict
 
         # Remove metadata-Attribute if it is empty (minimizing the JSON)
