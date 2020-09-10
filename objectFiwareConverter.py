@@ -17,11 +17,6 @@
     You can find the needed Files to convert from an Object into JSON
     in the folder JsonToObject and vice versa
 """
-__author__ = "Dominik Lux"
-__credits__ = ["Peter Detzner"]
-__maintainer__ = "Dominik Lux"
-__version__ = "0.0.1a"
-__status__ = "Developement"
 
 import json
 import sys, os
