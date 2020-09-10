@@ -14,9 +14,9 @@
 
 
 import unittest
-from objectFiwareConverter import ObjectFiwareConverter
-from ObjectToJson.entity import Entity
-from JsonToObject.reverseEntity import ReverseEntity
+from object_fiware_converter import ObjectFiwareConverter
+from object_to_json.entity import Entity
+
 
 
 class Test_JsonConverter(unittest.TestCase):

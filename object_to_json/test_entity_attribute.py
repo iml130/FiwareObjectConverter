@@ -16,8 +16,8 @@ import unittest
 import json
 import sys
 
-from ObjectToJson.entityAttribute import EntityAttribute as EA
-from ObjectToJson.entity import Entity
+from object_to_json.entity_attribute import EntityAttribute as EA
+from object_to_json.entity import Entity
 
 
 class TestEntityAttribute(unittest.TestCase):

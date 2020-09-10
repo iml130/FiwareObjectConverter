@@ -13,7 +13,7 @@
 #    limitations under the License.
 
 import unittest
-from ObjectToJson.entity import Entity
+from object_to_json.entity import Entity
 
 
 class Test_JsonConverter(unittest.TestCase):

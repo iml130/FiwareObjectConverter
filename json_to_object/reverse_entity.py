@@ -16,7 +16,7 @@ try:
     import urllib.parse as quote
 except ImportError:
     import urllib as quote
-from JsonToObject.reverseEntityAttribute import ReverseEntityAttribute
+from json_to_object.reverse_entity_attribute import ReverseEntityAttribute
 
 MISMATCH_MESSAGE = "The Class-Type does not match with the JSON-type ({} != {})"
 

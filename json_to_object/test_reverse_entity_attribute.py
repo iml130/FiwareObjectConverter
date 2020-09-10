@@ -15,7 +15,7 @@
 import sys
 import unittest
 
-from JsonToObject.reverseEntityAttribute import ReverseEntityAttribute
+from json_to_object.reverse_entity_attribute import ReverseEntityAttribute
 
 
 class TestEntityAttribute(unittest.TestCase):

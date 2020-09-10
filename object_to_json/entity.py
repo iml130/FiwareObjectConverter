@@ -20,7 +20,7 @@ try:
 except ImportError:
     import urllib as quote
 
-from ObjectToJson.entityAttribute import EntityAttribute
+from object_to_json.entity_attribute import EntityAttribute
 
 ERROR_MESSAGE_ATTTRIBUTE = 'Error setting Object in \'setObject\' : '
 
