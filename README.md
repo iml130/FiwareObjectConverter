@@ -1,6 +1,6 @@
 # FiwareObjectConverter (FOC)
 
-This is a simple implementation to serialize Python2- and -3-Objects (NGSIv2) into a [Fiware-Entity](https://www.fiware.org/wp-content/uploads/2016/12/2_FIWARE-NGSI-Managing-Context-Information-at-large-scale.pdf) and back. The generated JSON-Strings can be POSTed to their API.
+This is a simple implementation to serialize Python2- and -3-Objects into a [Fiware-Entity](https://www.fiware.org/wp-content/uploads/2016/12/2_FIWARE-NGSI-Managing-Context-Information-at-large-scale.pdf) (NGSIv2) and vice versa. The generated JSON-Strings can be POSTed to their API.
 
 There is also the posibillity to ignore the Metadata while parsing back to the (specified) Python-Object.
 
