@@ -12,15 +12,10 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-__author__ = "Dominik Lux"
-__credits__ = ["Peter Detzner"]
-__maintainer__ = "Dominik Lux"
-__version__ = "0.0.1a"
-__status__ = "Developement"
 
 import unittest
 
-from JsonToObject.reverseEntity import ReverseEntity
+from json_to_object.reverse_entity import ReverseEntity
 
 
 class TestReverseEntity(unittest.TestCase):
@@ -100,7 +95,7 @@ class TestReverseEntity(unittest.TestCase):
             type="number", value=1.5, metadata=dict(python=dict(type="dataType", value="float")))))
 
         tj = TestJson()
-        try: 
+        try:
             en.setObject(tj, setAttr=False)
             self.fail()
         except TypeError:

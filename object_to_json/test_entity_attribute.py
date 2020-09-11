@@ -12,18 +12,12 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-__author__ = "Dominik Lux"
-__credits__ = ["Peter Detzner"]
-__maintainer__ = "Dominik Lux"
-__version__ = "0.0.1a"
-__status__ = "Developement"
-
 import unittest
 import json
 import sys
 
-from ObjectToJson.entityAttribute import EntityAttribute as EA
-from ObjectToJson.entity import Entity
+from object_to_json.entity_attribute import EntityAttribute as EA
+from object_to_json.entity import Entity
 
 
 class TestEntityAttribute(unittest.TestCase):
@@ -61,8 +55,9 @@ class TestEntityAttribute(unittest.TestCase):
         self.assertEqual(ea.type, "number")
 
     def test_EntityAttributeLong(self):
-        ea = EA(123456789123456789123456789, False) # Evaluates to Long in Python 2
-        if sys.version_info <= (3,0):
+        # Evaluates to Long in Python 2
+        ea = EA(123456789123456789123456789, False)
+        if sys.version_info <= (3, 0):
             self.assertEqual(ea.metadata, dict(
                 python=dict(type="dataType", value="long")))
         else:
@@ -94,7 +89,8 @@ class TestEntityAttribute(unittest.TestCase):
 
     def test_EntityAttributeUnicode(self):
         ea = EA(u'Unicode', False)
-        if sys.version_info <= (3,0): # Python2 distinguishes between str and unicode 
+        # Python2 distinguishes between str and unicode
+        if sys.version_info <= (3, 0):
             self.assertEqual(ea.metadata, dict(
                 python=dict(type="dataType", value="unicode")))
         self.assertEqual(ea.value, u'Unicode')
@@ -140,7 +136,8 @@ class TestEntityAttribute(unittest.TestCase):
         self.assertEqual(ea.type, "array")
 
     def test_EntityAttributeFloat32List_concreteDataType(self):
-        ea = EA(ClassInt(), True, concreteDataType=dict(int="uint32_t"), baseEntity=True)
+        ea = EA(ClassInt(), True, concreteDataType=dict(
+            int="uint32_t"), baseEntity=True)
         self.assertTrue(hasattr(ea, 'metadata'))
         self.assertEqual(ea.metadata, dict(
             dataType=dict(type="dataType", value=dict(int='uint32_t'))))
@@ -151,14 +148,15 @@ class TestEntityAttribute(unittest.TestCase):
         ea = EA(RosClassWithSlotsInt(), False)
         self.assertEqual(ea.metadata, dict(
             python=dict(type="dataType", value="class")))
-        self.assertEqual(ea.type, "RosClass/Integer") # FOC should not touch it unless we encode!
+        # FOC should not touch it unless we encode!
+        self.assertEqual(ea.type, "RosClass/Integer")
         self.assertTrue(ea.value != None)
 
     def test_EntityAttributeForeignRosClassEncoded(self):
         ea = EA(RosClassWithSlotsInt(), False, encode=True)
         self.assertEqual(ea.metadata, dict(
             python=dict(type="dataType", value="class")))
-        self.assertEqual(ea.type, "RosClass%2FInteger") # FOC should encode it
+        self.assertEqual(ea.type, "RosClass%2FInteger")  # FOC should encode it
         self.assertTrue(ea.value != None)
 
 
@@ -175,9 +173,9 @@ class ComplexExample(object):
         self.testList = [44, 3.456, ["1", 2]]
         self.testdict = dict(a=1, b=2.5j)
         self.testClassInt = ClassInt()
-        self.testClassInt = [ClassInt()]*10 # Test id Array is supported
+        self.testClassInt = [ClassInt()]*10  # Test id Array is supported
         self.testClassInt = ClassSlotsInt()
-        self.testClassInt = [ClassSlotsInt()]*10 # Test id Array is supported
+        self.testClassInt = [ClassSlotsInt()]*10  # Test id Array is supported
 
     @classmethod
     def _complex_handler(clsself, Obj):
@@ -198,13 +196,15 @@ class ClassInt():
 
 class ClassSlotsInt(object):
     __slots__ = ['val1']
+
     def __init__(self):
         self.val1 = 1
+
 
 class RosClassWithSlotsInt(object):
     __slots__ = ['val1', '_type']
     _slot_types = ['uint8', 'string']
+
     def __init__(self):
         self.val1 = 1
         self._type = "RosClass/Integer"  # Example-Type
-

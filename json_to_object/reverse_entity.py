@@ -12,17 +12,11 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-__author__ = "Dominik Lux"
-__credits__ = ["Peter Detzner"]
-__maintainer__ = "Dominik Lux"
-__version__ = "0.0.1a"
-__status__ = "Developement"
-
 try: 
     import urllib.parse as quote
 except ImportError:
     import urllib as quote
-from JsonToObject.reverseEntityAttribute import ReverseEntityAttribute
+from json_to_object.reverse_entity_attribute import ReverseEntityAttribute
 
 MISMATCH_MESSAGE = "The Class-Type does not match with the JSON-type ({} != {})"
 

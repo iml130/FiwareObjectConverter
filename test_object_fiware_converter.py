@@ -12,16 +12,11 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-__author__ = "Dominik Lux"
-__credits__ = ["Peter Detzner"]
-__maintainer__ = "Dominik Lux"
-__version__ = "0.0.1a"
-__status__ = "Developement"
 
 import unittest
-from objectFiwareConverter import ObjectFiwareConverter
-from ObjectToJson.entity import Entity
-from JsonToObject.reverseEntity import ReverseEntity
+from object_fiware_converter import ObjectFiwareConverter
+from object_to_json.entity import Entity
+
 
 
 class Test_JsonConverter(unittest.TestCase):
@@ -32,7 +27,8 @@ class Test_JsonConverter(unittest.TestCase):
     def test_2Obj(self):
         json = """{"type": "TestClass", "id": "TestClass1", "val": {"type": "number", "value": 1, "metadata": {} } }"""
         tc = TestClass()
-        tc.val = 123456789123456789123456789 # Evaluates automatically to Long for Python 2
+        # Evaluates automatically to Long for Python 2
+        tc.val = 123456789123456789123456789
         ObjectFiwareConverter.fiware2Obj(json, tc)
         self.assertEqual(tc.val, 1)
 
@@ -82,10 +78,10 @@ class Test_JsonConverter(unittest.TestCase):
 
         self.assertEqual(tc.val, 1)
 
-    def test_IntegerType(self): ### TODO Accept Integers and other primitives?
+    def test_IntegerType(self):  # TODO Accept Integers and other primitives?
         json = """{"id":"Task1","type":"Task","task":{"type":"Integer","value":0}}"""
         tc = TestClass()
-        tc.val = 1 # set Number/Integer
+        tc.val = 1  # set Number/Integer
 
         ObjectFiwareConverter.fiware2Obj(json, tc, setAttr=True)
 
@@ -93,6 +89,7 @@ class Test_JsonConverter(unittest.TestCase):
         self.assertEqual(getattr(tc, 'id'), 'Task1')
         self.assertEqual(getattr(tc, 'type'), 'Task')
         self.assertEqual(tc.val, 1)
+
 
 class TestClass(object):
     def __init__(self):

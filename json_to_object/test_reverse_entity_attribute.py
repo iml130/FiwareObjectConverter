@@ -12,16 +12,10 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-__author__ = "Dominik Lux"
-__credits__ = ["Peter Detzner"]
-__maintainer__ = "Dominik Lux"
-__version__ = "0.0.1a"
-__status__ = "Developement"
-
-import unittest
 import sys
+import unittest
 
-from JsonToObject.reverseEntityAttribute import ReverseEntityAttribute
+from json_to_object.reverse_entity_attribute import ReverseEntityAttribute
 
 
 class TestEntityAttribute(unittest.TestCase):
@@ -47,7 +41,7 @@ class TestEntityAttribute(unittest.TestCase):
         self.assertEqual(type(rea.getValue()), float)
 
     def test_ReverseEntityAttributeLong(self):
-        if sys.version_info <= (3,0):
+        if sys.version_info <= (3, 0):
             d = dict(type="number", value=123456789123456789123, metadata=dict(
                 python=dict(type="dataType", value="long")))
             rea = ReverseEntityAttribute(d)
@@ -74,7 +68,7 @@ class TestEntityAttribute(unittest.TestCase):
                  metadata=dict(python=dict(type="dataType", value="unicode")))
         rea = ReverseEntityAttribute(d)
         self.assertEqual(u'Unicode', rea.getValue())
-        if sys.version_info <= (3,0):
+        if sys.version_info <= (3, 0):
             self.assertEqual(type(rea.getValue()), unicode)
         else:
             self.assertEqual(type(rea.getValue()), str)

@@ -17,19 +17,14 @@
     You can find the needed Files to convert from an Object into JSON
     in the folder JsonToObject and vice versa
 """
-__author__ = "Dominik Lux"
-__credits__ = ["Peter Detzner"]
-__maintainer__ = "Dominik Lux"
-__version__ = "0.0.1a"
-__status__ = "Developement"
 
 import json
 import sys, os
 # Adding This Sub-Project into the PythonPath
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
-from JsonToObject.reverseEntity import ReverseEntity
-from ObjectToJson.entity import Entity
+from json_to_object.reverse_entity import ReverseEntity
+from object_to_json.entity import Entity
 
 
 

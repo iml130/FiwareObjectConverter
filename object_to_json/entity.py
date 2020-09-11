@@ -12,19 +12,15 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-__author__ = "Peter Detzner"
-__credits__ = ["Peter Detzner"]
-__maintainer__ = "Dominik Lux"
-__version__ = "0.0.1a"
-__status__ = "Developement"
 
 import uuid
+
 try: 
     import urllib.parse as quote
 except ImportError:
     import urllib as quote
 
-from ObjectToJson.entityAttribute import EntityAttribute
+from object_to_json.entity_attribute import EntityAttribute
 
 ERROR_MESSAGE_ATTTRIBUTE = 'Error setting Object in \'setObject\' : '
 

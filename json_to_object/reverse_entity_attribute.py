@@ -12,31 +12,25 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-__author__ = "Dominik Lux"
-__credits__ = ["Peter Detzner"]
-__maintainer__ = "Dominik Lux"
-__version__ = "0.0.1a"
-__status__ = "Developement"
-
 import base64
 import array
-try: 
+try:
     import urllib.parse as quote
 except ImportError:
     import urllib as quote
 
 
-### Error Messages
+# Error Messages
 TYPE_VALUE_METADATA_NOT_DEFINED_MESSAGE = "One of the following is not defined in json: {type|value}"
 VALUE_EMPTY_MESSAGE = "The Value entered cannot be empty!"
 
-### Types which can be retrieved from the JSON:
+# Types which can be retrieved from the JSON:
 NUMERICAL_TYPES = ["number", "integer", "int", "float", "double", "long", ]
 TEXT_TYPES = ["string",  "text"]
 BOOLEAN_TYPES = ["bool",  "boolean"]
 ARRAYLIKE_TYPES = ["array", "list", "tuple", "vector"]
 OBJECTLIKE_TYPES = ["object", "obj"]
-try: 
+try:
     # Python 2
     WHOLE_NUMBERS = [int, long]
     STRING_TYPES = [unicode, str]
@@ -70,30 +64,30 @@ class ReverseEntityAttribute(object):
             raise ValueError(TYPE_VALUE_METADATA_NOT_DEFINED_MESSAGE)
 
         if not 'metadata' in _dict:
-            useMetaData=False
+            useMetaData = False
 
         if encoded:
             _dict['type'] = quote.unquote(_dict['type'])
 
-
-
         # Back Conversion:
-        if _dict['type'] == '' :
+        if _dict['type'] == '':
             self.value = _dict['value']
 
         elif _dict['type'].lower() in BOOLEAN_TYPES:
             self._setValue(bool, _dict['value'])
 
-        elif  _dict['type'].lower() in NUMERICAL_TYPES:
+        elif _dict['type'].lower() in NUMERICAL_TYPES:
             # Case something numerical
             self._setValue(float, _dict['value'])
-            if self.value % 1 == 0.0: 
+            if self.value % 1 == 0.0:
                 # Number is Integer Like, convert to int or long
-                self._setValueWithMetadata(WHOLE_NUMBERS, useMetaData, _dict, self.value)
+                self._setValueWithMetadata(
+                    WHOLE_NUMBERS, useMetaData, _dict, self.value)
 
         elif _dict['type'].lower() in TEXT_TYPES:
             # Case String or Unicode
-            self._setValueWithMetadata(STRING_TYPES, useMetaData, _dict, _dict['value'])
+            self._setValueWithMetadata(
+                STRING_TYPES, useMetaData, _dict, _dict['value'])
             if encoded:
                 self.value = quote.unquote(self.value)
 
@@ -107,7 +101,8 @@ class ReverseEntityAttribute(object):
                 tempValue.append(re.getValue())
 
             # Second: decide if Complex, Tuple or List
-            self._setValueWithMetadata(COMPLEX_TYPES, useMetaData, _dict, tempValue)
+            self._setValueWithMetadata(
+                COMPLEX_TYPES, useMetaData, _dict, tempValue)
 
         elif _dict['type'].lower() in OBJECTLIKE_TYPES:
             # arbitary JSON object with key, value
@@ -127,9 +122,10 @@ class ReverseEntityAttribute(object):
 
             # Retrieve Information about int8 or uint8
             if "metadata" in _dict and "dataType" in _dict["metadata"]:
-                datatype =  _dict['metadata']['dataType']['value']
-            else: 
-                raise ValueError("Unknown Object-Type: " + _dict['type'] + ". The MetaData does not specify what the actual DataType is.")
+                datatype = _dict['metadata']['dataType']['value']
+            else:
+                raise ValueError(
+                    "Unknown Object-Type: " + _dict['type'] + ". The MetaData does not specify what the actual DataType is.")
 
             # convert back to integers
             if datatype == "int8[]":
@@ -143,7 +139,8 @@ class ReverseEntityAttribute(object):
         else:
             # Maybe a class with key, value or another JSON object, check if you can iterate!
             if (not hasattr(_dict['value'], 'items')):
-                raise ValueError("Unknown Object-Type: " + _dict['type'] + ". And it is not possible to iterate over this Object-Type!")
+                raise ValueError(
+                    "Unknown Object-Type: " + _dict['type'] + ". And it is not possible to iterate over this Object-Type!")
 
             tempDict = {}
             for key, value in _dict['value'].items():
@@ -151,10 +148,8 @@ class ReverseEntityAttribute(object):
                 tempDict[key] = rea.getValue()
             self.value = tempDict
 
-
     def getValue(self):
         return self.value
-
 
     def _setValue(self, targetType, value):
         """ This function sets self.value  . 
@@ -165,9 +160,8 @@ class ReverseEntityAttribute(object):
             self.value = value.lower in ["false", "f", "0"]
         elif targetType != complex:
             self.value = targetType(value)
-        else: 
+        else:
             self.value = targetType(*value)
-
 
     def _setValueWithMetadata(self, targetTypes, useMetaData, readict, value):
         """ This function sets the Value, dependent on the given metadata.
@@ -182,7 +176,7 @@ class ReverseEntityAttribute(object):
                 if metadata['python'] == dict(type="dataType", value=tt.__name__):
                     self._setValue(tt, value)
                     return
-            
+
             # Case: we did not set self.value, we default to the last element
             self._setValue(targetTypes[-1], value)
         else:
