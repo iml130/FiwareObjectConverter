@@ -19,49 +19,52 @@
 """
 
 import json
-import sys, os
+import sys
+import os
+from fiwareobjectconverter.object_to_json.entity import Entity
+from fiwareobjectconverter.json_to_object.reverse_entity import ReverseEntity
 # Adding This Sub-Project into the PythonPath
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
-
-from json_to_object.reverse_entity import ReverseEntity
-from object_to_json.entity import Entity
-
 
 
 class ObjectFiwareConverter(object):
     """ This class should be primarily used to convert a Object <-> JSON-string.
         The classes in subdirectories are either used to convert them into JSON
-        or into a Python-specific-Object. 
+        or into a Python-specific-Object.
     """
 
     @classmethod
-    def obj2Fiware(clsself, _object, ind=0, dataTypeDict={}, ignorePythonMetaData=False, showIdValue=True, encode=False): 
-        en = Entity()
-        en.setObject(_object, dataTypeDict, ignorePythonMetaData, showIdValue= showIdValue, encode=encode)
-        return clsself._json(en, ind)
+    def obj_to_fiware(cls, _object, ind=0, data_type_dict={}, ignore_python_meta_data=False,
+                        show_id_value=True, encode=False):
+        entity = Entity()
+        entity.set_object(_object, data_type_dict, ignore_python_meta_data,
+                     show_id_value=show_id_value, encode=encode)
+        return cls._json(entity, ind)
 
     @classmethod
-    def fiware2Obj(clsself, _fiwareEntity, _objectStructure={}, useMetaData=True, ignoreWrongDataType=False, setAttr=False, encoded=False):
-        jsonObj= None
-        if(type(_fiwareEntity) is str):
-            jsonObj = clsself._obj(_fiwareEntity)
+    def fiware_to_obj(cls, _fiware_entity, _object_structure={}, use_meta_data=True,
+                    ignore_wrong_data_type=False, set_attr=False, encoded=False):
+        json_obj = None
+        if isinstance(_fiware_entity, str):
+            json_obj = cls._obj(_fiware_entity)
         else:
-            jsonObj = _fiwareEntity
-        re = ReverseEntity(**jsonObj)
-        return re.setObject(_objectStructure, useMetaData, ignoreWrongDataType, setAttr, encoded=encoded) 
+            json_obj = _fiware_entity
+        reverse_entity = ReverseEntity(**json_obj)
+        return reverse_entity.set_object(_object_structure, use_meta_data, ignore_wrong_data_type,
+                                set_attr, encoded=encoded)
 
     @classmethod
-    def _complex_handler(clsself, Obj):
-        if hasattr(Obj, '__dict__'):
-            return Obj.__dict__
+    def _complex_handler(cls, obj):
+        if hasattr(obj, '__dict__'):
+            return obj.__dict__
         else:
             raise TypeError('Object of type %s with value of %s is not JSON serializable' % (
-                type(Obj), repr(Obj)))
+                type(obj), repr(obj)))
 
     @classmethod
-    def _json(clsself, obj, ind=0):
-        return json.dumps(obj.__dict__, default=clsself._complex_handler, indent=ind)
+    def _json(cls, obj, ind=0):
+        return json.dumps(obj.__dict__, default=cls._complex_handler, indent=ind)
 
     @classmethod
-    def _obj(clsself, json_str):
+    def _obj(cls, json_str):
         return json.loads(json_str)

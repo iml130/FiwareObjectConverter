@@ -21,7 +21,7 @@ except ImportError:
 
 
 # Error Messages
-TYPE_VALUE_METADATA_NOT_DEFINED_MESSAGE = "One of the following is not defined in json: {type|value}"
+TYPE_VALUE_METADATA_NOT_DEFINED_MESSAGE = "One of the following isn't defined in json: {type|value}"
 VALUE_EMPTY_MESSAGE = "The Value entered cannot be empty!"
 
 # Types which can be retrieved from the JSON:
@@ -43,8 +43,8 @@ except NameError:
 
 
 class ReverseEntityAttribute(object):
-    """ Here the actual Conversion happens. 
-        By initiliazing the class, the _dict is translated into the 
+    """ Here the actual Conversion happens.
+        By initiliazing the class, the _dict is translated into the
         primitive datatypes. With the variable useMetaData the metadata can be ignored
         It defaults then from:
         Complex, Tuple -> List
@@ -74,19 +74,19 @@ class ReverseEntityAttribute(object):
             self.value = _dict['value']
 
         elif _dict['type'].lower() in BOOLEAN_TYPES:
-            self._setValue(bool, _dict['value'])
+            self._set_value(bool, _dict['value'])
 
         elif _dict['type'].lower() in NUMERICAL_TYPES:
             # Case something numerical
-            self._setValue(float, _dict['value'])
+            self._set_value(float, _dict['value'])
             if self.value % 1 == 0.0:
                 # Number is Integer Like, convert to int or long
-                self._setValueWithMetadata(
+                self._set_value_with_metadata(
                     WHOLE_NUMBERS, useMetaData, _dict, self.value)
 
         elif _dict['type'].lower() in TEXT_TYPES:
             # Case String or Unicode
-            self._setValueWithMetadata(
+            self._set_value_with_metadata(
                 STRING_TYPES, useMetaData, _dict, _dict['value'])
             if encoded:
                 self.value = quote.unquote(self.value)
@@ -94,91 +94,93 @@ class ReverseEntityAttribute(object):
         elif _dict['type'].lower() in ARRAYLIKE_TYPES:
             # Case Complex, Tuple or List
             # First: reverse every element to Obj
-            tempList = _dict['value']
-            tempValue = list()
-            for value in tempList:
-                re = ReverseEntityAttribute(value, useMetaData)
-                tempValue.append(re.getValue())
+            temp_list = _dict['value']
+            temp_value = list()
+            for value in temp_list:
+                reverse_entity_attribute = ReverseEntityAttribute(value, useMetaData)
+                temp_value.append(reverse_entity_attribute.get_value())
 
             # Second: decide if Complex, Tuple or List
-            self._setValueWithMetadata(
-                COMPLEX_TYPES, useMetaData, _dict, tempValue)
+            self._set_value_with_metadata(
+                COMPLEX_TYPES, useMetaData, _dict, temp_value)
 
         elif _dict['type'].lower() in OBJECTLIKE_TYPES:
             # arbitary JSON object with key, value
-            tempDict = _dict['value']
+            temp_dict = _dict['value']
             self.value = {}
-            for key, value in tempDict.items():
+            for key, value in temp_dict.items():
                 rea = ReverseEntityAttribute(value, useMetaData)
-                self.value[key] = rea.getValue()
+                self.value[key] = rea.get_value()
 
         elif _dict['type'].lower() == "base64":
             # Case we have a base64 String:
             # First Unquote Special Characters
-            tempValue = quote.unquote(_dict['value'])
+            temp_value = quote.unquote(_dict['value'])
 
             # Decode Base64 String into Bytes
-            tempValue = base64.b64decode(tempValue)
+            temp_value = base64.b64decode(temp_value)
 
             # Retrieve Information about int8 or uint8
             if "metadata" in _dict and "dataType" in _dict["metadata"]:
                 datatype = _dict['metadata']['dataType']['value']
             else:
                 raise ValueError(
-                    "Unknown Object-Type: " + _dict['type'] + ". The MetaData does not specify what the actual DataType is.")
+                    "Unknown Object-Type: " + _dict['type'] +
+                     ". The MetaData does not specify what the actual DataType is.")
 
             # convert back to integers
             if datatype == "int8[]":
-                tempValue = array.array("b", tempValue)
+                temp_value = array.array("b", temp_value)
             else:
-                tempValue = array.array("B", tempValue)
+                temp_value = array.array("B", temp_value)
 
             # Change DataType to primitive python list
-            self.value = tempValue.tolist()
+            self.value = temp_value.tolist()
 
         else:
             # Maybe a class with key, value or another JSON object, check if you can iterate!
-            if (not hasattr(_dict['value'], 'items')):
+            if not hasattr(_dict['value'], 'items'):
                 raise ValueError(
-                    "Unknown Object-Type: " + _dict['type'] + ". And it is not possible to iterate over this Object-Type!")
+                    "Unknown Object-Type: " + _dict['type'] +
+                     ". And it is not possible to iterate over this Object-Type!")
 
-            tempDict = {}
+            temp_dict = {}
             for key, value in _dict['value'].items():
                 rea = ReverseEntityAttribute(value, useMetaData)
-                tempDict[key] = rea.getValue()
-            self.value = tempDict
+                temp_dict[key] = rea.get_value()
+            self.value = temp_dict
 
-    def getValue(self):
+    def get_value(self):
         return self.value
 
-    def _setValue(self, targetType, value):
-        """ This function sets self.value  . 
+    def _set_value(self, target_type, value):
+        """ This function sets self.value  .
             Complex needs to be called differently
             and we need to check if the input of bool is a string
         """
-        if targetType == bool and type(value) == str:
+        if target_type == bool and isinstance(value, str):
             self.value = value.lower in ["false", "f", "0"]
-        elif targetType != complex:
-            self.value = targetType(value)
+        elif target_type != complex:
+            self.value = target_type(value)
         else:
-            self.value = targetType(*value)
+            self.value = target_type(*value)
 
-    def _setValueWithMetadata(self, targetTypes, useMetaData, readict, value):
+    def _set_value_with_metadata(self, target_types, use_meta_data, readict, value):
         """ This function sets the Value, dependent on the given metadata.
             If no metadata is given or it does not contain the correct format,
             we default to the last element of targetTypes
         """
-        if useMetaData and 'python' in readict['metadata']:
+        if use_meta_data and 'python' in readict['metadata']:
             metadata = readict['metadata']
 
             # we try to find a valid dataType
-            for tt in targetTypes:
-                if metadata['python'] == dict(type="dataType", value=tt.__name__):
-                    self._setValue(tt, value)
+            for target_type in target_types:
+                if metadata['python'] == dict(type="dataType", value=target_type.__name__):
+                    self._set_value(target_type, value)
                     return
 
             # Case: we did not set self.value, we default to the last element
-            self._setValue(targetTypes[-1], value)
+            self._set_value(target_types[-1], value)
         else:
             # Case: no metadata, we also default to the last element
-            self._setValue(targetTypes[-1], value)
+            self._set_value(target_types[-1], value)

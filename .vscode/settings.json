@@ -1,0 +1,11 @@
+{
+    "python.pythonPath": "/usr/bin/python3",
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    //"python.linting.pylintPath" : "./.pylintrc",
+    //"python.linting.pylintPath" : "/home/admin-oe130/.local/lib/python3.8/site-packages"
+    /*"python.linting.pylintArgs": [
+        "--rcfile",
+        "${workspaceFolder}/.pylintrc"
+    ]*/
+}

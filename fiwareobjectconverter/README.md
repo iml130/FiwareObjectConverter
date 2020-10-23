@@ -1,6 +1,6 @@
 # FiwareObjectConverter (FOC)
 
-This is a simple implementation to serialize Python2- and -3-Objects into a [Fiware-Entity](https://www.fiware.org/wp-content/uploads/2016/12/2_FIWARE-NGSI-Managing-Context-Information-at-large-scale.pdf) (NGSIv2) and vice versa. The generated JSON-Strings can be POSTed to their API.
+This is a simple implementation to serialize Python2- and -3-Objects (NGSIv2) into a [Fiware-Entity](https://www.fiware.org/wp-content/uploads/2016/12/2_FIWARE-NGSI-Managing-Context-Information-at-large-scale.pdf) and back. The generated JSON-Strings can be POSTed to their API.
 
 There is also the posibillity to ignore the Metadata while parsing back to the (specified) Python-Object.
 
@@ -34,7 +34,7 @@ This class can be simply serialized to Json with:
 ```python
 from objectFiwareConverter import ObjectFiwareConverter
 
-json = ObjectFiwareConverter.obj2Fiware(FooBar(), ind=4)
+json = ObjectFiwareConverter.obj_to_fiware(FooBar(), ind=4)
 # indent is set to 4 for readability
 
 ```
@@ -64,7 +64,7 @@ The `"type"`- and `"id"`-values can be set manually. To do so, just add `self.ty
 You also have the option to not set the `id` and `value`. Just do the following:
 
 ```python
-json = ObjectFiwareConverter.obj2Fiware(FooBar(), ind=4, showIdValue=False)
+json = ObjectFiwareConverter.obj_to_fiware(FooBar(), ind=4, showIdValue=False)
 ```
 which would just create: 
 
@@ -143,7 +143,7 @@ class AFooBar(object):
         self.y = 42.123
 
 myData = dict(y='float32', x='float32')
-json = ObjectFiwareConverter.obj2Fiware(AFooBar(), ind=4, dataTypeDict=myData)
+json = ObjectFiwareConverter.obj_to_fiware(AFooBar(), ind=4, dataTypeDict=myData)
 
 ```
 wolud result to:
@@ -185,7 +185,7 @@ wolud result to:
 ---
 To exclude the `python`-metadata, while creating the `json`. You can use `ignorePythonMetaData=True` as here:
 ```python
-json = ObjectFiwareConverter.obj2Fiware(FooBar(), ind=4, ignorePythonMetaData=True) # json fron above
+json = ObjectFiwareConverter.obj_to_fiware(FooBar(), ind=4, ignorePythonMetaData=True) # json fron above
 ```
 This creates simply the following `json`:
 

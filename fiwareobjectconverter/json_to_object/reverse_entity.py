@@ -12,11 +12,11 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-try: 
+try:
     import urllib.parse as quote
 except ImportError:
     import urllib as quote
-from json_to_object.reverse_entity_attribute import ReverseEntityAttribute
+from fiwareobjectconverter.json_to_object.reverse_entity_attribute import ReverseEntityAttribute
 
 MISMATCH_MESSAGE = "The Class-Type does not match with the JSON-type ({} != {})"
 
@@ -28,33 +28,34 @@ class ReverseEntity(object):
         'setAttr' is here explicitly used, if set to true.
     """
 
-    def __init__(self, type=None, id=None, *args, **payload):
-        self.type = type
-        self.id = id
+    def __init__(self, type_var=None, id_var=None, *args, **payload):
+        self.type = type_var
+        self.id_var = id_var
         self.payload = payload
 
-    def setObject(self, obj, useMetaData=True, ignoreWrongDataType=False, setAttr=False, encoded=False):
+    def set_object(self, obj, use_meta_data=True, ignore_wrong_data_type=False,
+                    set_attr=False, encoded=False):
         # Explicitly set id and type, always!
         if encoded:
-            setattr(obj, 'id', str(self.id))
+            setattr(obj, 'id', str(self.id_var))
             setattr(obj, 'type', str(self.type))
         else:
-            setattr(obj, 'id', quote.unquote(str(self.id)))
+            setattr(obj, 'id', quote.unquote(str(self.id_var)))
             setattr(obj, 'type', quote.unquote(str(self.type)))
 
-        
-        
+
+
         for key, value in self.payload.items():
-            rea = ReverseEntityAttribute(value, useMetaData, encoded=encoded)
-            if (setAttr):
+            rea = ReverseEntityAttribute(value, use_meta_data, encoded=encoded)
+            if set_attr:
                 # Just use setAttr
-                setattr(obj, key, rea.getValue())
+                setattr(obj, key, rea.get_value())
             elif key in obj.__dict__:
-                if (ignoreWrongDataType):
+                if ignore_wrong_data_type:
                     # Ignoring expected Data-Type
-                    obj.__dict__[key] = rea.getValue()
+                    obj.__dict__[key] = rea.get_value()
                 else:
-                    val = rea.getValue()
+                    val = rea.get_value()
                     if type(obj.__dict__[key]) is not type(val):
                         raise TypeError(MISMATCH_MESSAGE.format(type(obj.__dict__[key]), type(val)))
                     else:

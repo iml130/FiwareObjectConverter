@@ -15,18 +15,18 @@
 
 import uuid
 
-try: 
+try:
     import urllib.parse as quote
 except ImportError:
     import urllib as quote
 
-from object_to_json.entity_attribute import EntityAttribute
+from fiwareobjectconverter.object_to_json.entity_attribute import EntityAttribute
 
 ERROR_MESSAGE_ATTTRIBUTE = 'Error setting Object in \'setObject\' : '
 
 
 class Entity(object):
-    """ This is the Entity which will be later serialized with json. 
+    """ This is the Entity which will be later serialized with json.
         Here the __dict__ is set with setObject. Also th uuid is here generated and
         all types are converted into correct structure with EntityAttribute.
         The Keys "type" "id" and "_*" are ignored and not added into the Entity
@@ -34,40 +34,40 @@ class Entity(object):
 
     def __init__(self):
         self.type = self.__class__.__name__
-        self.id = self.type + str(uuid.uuid4())
+        self.id_var = self.type + str(uuid.uuid4())
 
-    def setObject(self, _object, dataTypeDict, ignorePythonMetaData, showIdValue=True, encode=False):
+    def set_object(self, _object, data_type_dict, ignore_python_meta_data,
+                   show_id_value=True, encode=False):
         # Clear own dictionary
         self.__dict__.clear()
         try:
             # Setting EntityType and EntitiyID
-            if (showIdValue):
+            if show_id_value:
                 self.type = _object.__class__.__name__
-                self.id = self.type + str(uuid.uuid4())
-
+                self.id_var = self.type + str(uuid.uuid4())
 
             # Set Key/Value in own Dictionary
-            if (isinstance(_object, dict)):
-                iterL = _object.keys()
-            elif(hasattr(_object, '__slots__')):
-                iterL = getattr(_object, '__slots__')
+            if isinstance(_object, dict):
+                iter_l = _object.keys()
+            elif hasattr(_object, '__slots__'):
+                iter_l = getattr(_object, '__slots__')
             else:
-                iterL = _object.__dict__
+                iter_l = _object.__dict__
 
-            for key in iterL:
+            for key in iter_l:
                 # Explicitly set id and type if it exists
-                if (key == "id" and showIdValue):
-                    if (isinstance(_object, dict)):
-                        self.id = _object[key]
+                if (key == "id" and show_id_value):
+                    if isinstance(_object, dict):
+                        self.id_var = _object[key]
                     else:
-                        self.id = getattr(_object, key) 
-                elif (key == "type" and showIdValue):
-                    if (isinstance(_object, dict)):
+                        self.id_var = getattr(_object, key)
+                elif (key == "type" and show_id_value):
+                    if isinstance(_object, dict):
                         self.type = _object[key]
                     else:
-                        self.type = getattr(_object, key) 
+                        self.type = getattr(_object, key)
 
-                if (isinstance(_object, dict)):
+                if isinstance(_object, dict):
                     value = _object[key]
                 else:
                     value = getattr(_object, key)
@@ -75,15 +75,16 @@ class Entity(object):
                     # Object contains invalid key-name, ignore!
                     pass
                 else:
-                    self.__dict__[key] = EntityAttribute(value, ignorePythonMetaData, dataTypeDict.get(key), baseEntity=True, encode=encode) 
+                    self.__dict__[key] = EntityAttribute(value, ignore_python_meta_data,
+                                                         data_type_dict.get(key), baseEntity=True,
+                                                         encode=encode)
         except AttributeError as ex:
-            raise ValueError(ERROR_MESSAGE_ATTTRIBUTE, ex)
+            raise ValueError(ERROR_MESSAGE_ATTTRIBUTE, ex) from ex
 
         # Encode in HTML (OCB Specific!)
-        if encode and showIdValue:
+        if encode and show_id_value:
             self.type = quote.quote(self.type, safe='')
-            self.id = quote.quote(self.id, safe='')
-
+            self.id_var = quote.quote(self.id_var, safe='')
 
     def __repr__(self):
-        return "Id: " + str(self.id) + ", Type: " + str(self.type)
+        return "Id: " + str(self.id_var) + ", Type: " + str(self.type)
