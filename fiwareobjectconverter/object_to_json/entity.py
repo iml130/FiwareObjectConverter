@@ -96,18 +96,18 @@ class Entity(object):
                         self.type = _object[key]
                     else:
                         self.type = getattr(_object, key)
-
-                if isinstance(_object, dict):
-                    value = _object[key]
                 else:
-                    value = getattr(_object, key)
-                if (key == "type" or key == "id" or key.startswith('_', 0, 1)):
-                    # Object contains invalid key-name, ignore!
-                    pass
-                else:
-                    self.__dict__[key] = EntityAttribute(value, ignore_python_meta_data,
-                                                         data_type_dict.get(key), baseEntity=True,
-                                                         encode=encode)
+                    if isinstance(_object, dict):
+                        value = _object[key]
+                    else:
+                        value = getattr(_object, key)
+                    if key.startswith('_', 0, 1):
+                        # Object contains invalid key-name, ignore!
+                        pass
+                    else:
+                        self.__dict__[key] = EntityAttribute(value, ignore_python_meta_data,
+                                                             data_type_dict.get(key),
+                                                             baseEntity=True, encode=encode)
         except AttributeError as ex:
             raise ValueError(ERROR_MESSAGE_ATTTRIBUTE, ex) from ex
 
