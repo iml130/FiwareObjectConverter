@@ -35,15 +35,62 @@ class ObjectFiwareConverter(object):
 
     @classmethod
     def obj_to_fiware(cls, _object, ind=0, data_type_dict={}, ignore_python_meta_data=False,
-                        show_id_value=True, encode=False):
+                      show_id_value=True, encode=False):
+        """
+        This method should be primarily used to convert a Object -> JSON-string.
+
+        Parameters
+        ----------
+        _object :
+            The Object, which should be converted.
+        ind : int
+            <Desctription of ind>
+        data_type_dict : dict
+            <Desctription of data_type_dict>
+        ignore_python_meta_data : bool
+            <Desctription of ignore_python_meta_data>
+        show_id_value : bool
+            <Desctription of show_id_value>
+        encode : bool
+            <Desctription of encode>
+
+        Returns
+        -------
+        xxx
+            Returning value
+        """
+
         entity = Entity()
         entity.set_object(_object, data_type_dict, ignore_python_meta_data,
-                     show_id_value=show_id_value, encode=encode)
+                          show_id_value=show_id_value, encode=encode)
         return cls._json(entity, ind)
 
     @classmethod
     def fiware_to_obj(cls, _fiware_entity, _object_structure={}, use_meta_data=True,
-                    ignore_wrong_data_type=False, set_attr=False, encoded=False):
+                      ignore_wrong_data_type=False, set_attr=False, encoded=False):
+        """
+        This method should be primarily used to convert a JSON-string -> Object.
+
+        Parameters
+        ----------
+        _fiware_entity :
+            <Desctription of _object>
+        _object_structure : dict
+            <Desctription of _object>
+        use_meta_data : bool
+            <Desctription of _object>
+        ignore_wrong_data_type : bool
+            <Desctription of _object>
+        set_attr : bool
+            <Desctription of _object>
+        encoded : bool
+            <Desctription of _object>
+
+        Returns
+        -------
+        xxx
+            Returning value
+        """
         json_obj = None
         if isinstance(_fiware_entity, str):
             json_obj = cls._obj(_fiware_entity)
@@ -51,7 +98,7 @@ class ObjectFiwareConverter(object):
             json_obj = _fiware_entity
         reverse_entity = ReverseEntity(**json_obj)
         return reverse_entity.set_object(_object_structure, use_meta_data, ignore_wrong_data_type,
-                                set_attr, encoded=encoded)
+                                         set_attr, encoded=encoded)
 
     @classmethod
     def _complex_handler(cls, obj):

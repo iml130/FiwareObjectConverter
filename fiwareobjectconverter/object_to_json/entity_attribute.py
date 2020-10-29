@@ -27,7 +27,7 @@ THRESH = 256
 
 
 class EntityAttribute():
-    """ Here the actual Conversion to the correct JSON-Format happens
+    """ Here the actual conversion to the correct JSON-Format happens
     (no string is generated here). By initializing this class the given Object is
     translated into the format. This is straight-forward if-then-else-magic.
     Additional information are given for some types, for a bidirectional Conversion.

@@ -12,6 +12,8 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
+""" This Module ...
+"""
 
 import uuid
 
@@ -27,9 +29,16 @@ ERROR_MESSAGE_ATTTRIBUTE = 'Error setting Object in \'setObject\' : '
 
 class Entity(object):
     """ This is the Entity which will be later serialized with json.
-        Here the __dict__ is set with setObject. Also th uuid is here generated and
+        Here the __dict__ is set with setObject. Also the uuid is here generated and
         all types are converted into correct structure with EntityAttribute.
         The Keys "type" "id" and "_*" are ignored and not added into the Entity
+
+    Attributes
+    ----------
+    type : str
+        xxx
+    id_var : str
+        xxx
     """
 
     def __init__(self):
@@ -38,11 +47,32 @@ class Entity(object):
 
     def set_object(self, _object, data_type_dict, ignore_python_meta_data,
                    show_id_value=True, encode=False):
+        """
+        ...
+
+        Parameters
+        ----------
+        _object :
+            The Object, which should be converted.
+        data_type_dict : dict
+            <Desctription of data_type_dict>
+        ignore_python_meta_data : bool
+            <Desctription of ignore_python_meta_data>
+        show_id_value : bool
+            <Desctription of show_id_value>
+        encoded : bool
+            <Desctription of encoded>
+
+        Returns
+        -------
+        xxx
+            Returning value
+        """
         # Clear own dictionary
         self.__dict__.clear()
         try:
-            # Setting EntityType and EntitiyID
             if show_id_value:
+                # Setting EntityType and EntitiyID
                 self.type = _object.__class__.__name__
                 self.id_var = self.type + str(uuid.uuid4())
 
