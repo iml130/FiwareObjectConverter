@@ -18,14 +18,23 @@ from fiwareobjectconverter.object_fiware_converter import ObjectFiwareConverter
 from fiwareobjectconverter.object_to_json.entity import Entity
 
 
-
-class Test_JsonConverter(unittest.TestCase):
+class TestJsonConverter(unittest.TestCase):
 
     def test_to_fiware(self):
         ObjectFiwareConverter.obj_to_fiware(TestClass(), indent=4)
 
     def test_to_obj(self):
-        test_to_obj = """{"type": "TestClass", "id": "TestClass1", "val": {"type": "number", "value": 1, "metadata": {} } }"""
+        test_to_obj = """
+                        {
+                            "type": "TestClass",
+                            "id": "TestClass1",
+                            "val":  {
+                                        "type": "number",
+                                        "value": 1,
+                                        "metadata": {}
+                                    }
+                        }
+                        """
         test_class = TestClass()
         # Evaluates automatically to Long for Python 2
         test_class.val = 123456789123456789123456789
@@ -33,15 +42,46 @@ class Test_JsonConverter(unittest.TestCase):
         self.assertEqual(test_class.val, 1)
 
     def test_to_obj_without_metadata_unicode(self):
-        json = """{"type":"TestClass","id":"ID","val":{"type":"string","value":"i am unicode","metadata":{"python":{"type":"dataType","value":"unicode"}}}}"""
+        json = """
+                {
+                    "type": "TestClass",
+                    "id": "ID",
+                    "val":  {
+                                "type": "string",
+                                "value":"i am unicode",
+                                "metadata": {
+                                                "python":   {
+                                                                "type":"dataType",
+                                                                "value":"unicode"
+                                                            }
+                                            }
+                            }
+                }
+                """
         test_class = TestClass()
         test_class.val = str(' ')
-        ObjectFiwareConverter.fiware_to_obj(json, test_class, use_meta_data=False)
+        ObjectFiwareConverter.fiware_to_obj(
+            json, test_class, use_meta_data=False)
         self.assertEqual(type(test_class.val), str)
         self.assertEqual(test_class.val, 'i am unicode')  # Not unicode
 
     def test_to_object_without_meta_data_and_type_check_unicode(self):
-        json = """{"type":"TestClass","id":"ID","val":{"type":"string","value":"i am unicode","metadata":{"python":{"type":"dataType","value":"unicode"}}}}"""
+        json = """
+                {
+                    "type":"TestClass",
+                    "id":"ID",
+                    "val":  {
+                                "type":"string",
+                                "value":"i am unicode",
+                                "metadata": {
+                                                "python":   {
+                                                                "type":"dataType",
+                                                                "value":"unicode"
+                                                            }
+                                            }
+                            }
+                }
+                """
         test_class = TestClass()
         ObjectFiwareConverter.fiware_to_obj(
             json, test_class, use_meta_data=False, ignore_wrong_data_type=True)
@@ -49,14 +89,46 @@ class Test_JsonConverter(unittest.TestCase):
         self.assertEqual(test_class.val, 'i am unicode')  # Not unicode
 
     def test_to_object_without_meta_data_complex(self):
-        json = """{"type": "TestClass","id": "ID","val":
-                 {"type": "array","value": 
-                    [{"type": "number","value": 0.0,"metadata": {"python": {"type": "dataType","value": "float"}}},
-                     {"type": "number","value": 2.1,"metadata": {"python": {"type": "dataType","value": "float"}}}]
-                ,"metadata": {"python": {"type": "dataType","value": "complex"}}}}"""
+        json = """
+                {
+                    "type": "TestClass",
+                    "id": "ID",
+                    "val":  {
+                                "type": "array",
+                                "value": [  {
+                                                "type": "number",
+                                                "value": 0.0,
+                                                "metadata": {
+                                                                "python":   {
+                                                                              "type": "dataType",
+                                                                              "value": "float"
+                                                                            }
+                                                            }
+                                            },
+                                            {
+                                                "type": "number",
+                                                "value": 2.1,
+                                                "metadata": {
+                                                                "python":   {
+                                                                              "type": "dataType",
+                                                                              "value": "float"
+                                                                            }
+                                                            }
+                                            }
+                                         ],
+                                "metadata": {
+                                                "python":   {
+                                                                "type": "dataType",
+                                                                "value": "complex"
+                                                            }
+                                            }
+                            }
+                }
+                """
         test_class = TestClass()
         test_class.val = list()
-        ObjectFiwareConverter.fiware_to_obj(json, test_class, use_meta_data=False)
+        ObjectFiwareConverter.fiware_to_obj(
+            json, test_class, use_meta_data=False)
         self.assertEqual(type(test_class.val), list)
         self.assertEqual(test_class.val, [0, 2.1])  # Not unicode
 
@@ -70,7 +142,8 @@ class Test_JsonConverter(unittest.TestCase):
         self.assertEqual(test_class.val, 1)
 
     def test_to_fiware_to_object_without_id_value(self):
-        json = ObjectFiwareConverter.obj_to_fiware(TestClass(), show_id_value=False)
+        json = ObjectFiwareConverter.obj_to_fiware(
+            TestClass(), show_id_value=False)
 
         test_class = TestClass()
         test_class.val = 42
