@@ -126,7 +126,10 @@ class EntityAttribute():
                     'Cannot get attrs from {}'.format(str(_object)))
 
             # ROS-Specific Type-Declaration
-            if hasattr(_object, '_type') and hasattr(_object, '_slot_types') and hasattr(_object, '__slots__'):
+            if (hasattr(_object, '_type') and
+                hasattr(_object, '_slot_types') and
+                hasattr(_object, '__slots__')
+                ):
                 # This is a special CASE for ROS!!!!
                 if not encode:
                     self.type = _object._type
@@ -134,13 +137,15 @@ class EntityAttribute():
                     self.type = quote.quote(_object._type, safe='')
 
                 self.set_python_meta_data(ipmd, 'class')
-                # Special Case 'Image-like'-Data in ROS (very long 'int8[]'- and 'uint8[]' - arrays)
+                # Special Case 'Image-like'-Data in ROS (very long 'int8[]'- and 'uint8[]'- arrays)
                 # These are converted into Base64 (escaped)
                 temp_dict = {}
                 for key, key_type in zip(_object.__slots__, _object._slot_types):
                     if key.startswith('_'):
                         continue
-                    if ('int8[' in key_type or 'uint8[' in key_type) and len(getattr(_object, key)) >= THRESH:
+                    if (('int8[' in key_type or 'uint8[' in key_type) and
+                            len(getattr(_object, key)) >= THRESH
+                        ):
                         # TODO DL 256 -> Threshold?
                         # Generate Base64 String of the Array:
                         temp_dict[key] = EntityAttribute(
@@ -180,7 +185,9 @@ class EntityAttribute():
                                     # Looks like ROS converted it for us into str!
                                     to_convert = array.array(
                                         'B', strange_obj).tolist()
-                                if not self.python_version < (3, 0) and isinstance(strange_obj, bytes):
+                                if (not self.python_version < (3, 0) and
+                                    isinstance(strange_obj, bytes)
+                                    ):
                                     # Looks like ROS converted it for us into bytes!
                                     to_convert = list(strange_obj)
                                 if to_convert is not None and len(to_convert) >= THRESH:

@@ -42,15 +42,23 @@ class TestEntityAttribute(unittest.TestCase):
 
     def test_entity_attribute_int(self):
         entity_attribute = EntityAttribute(1, False)
-        self.assertEqual(entity_attribute.metadata, dict(
-            python=dict(type='dataType', value='int')))
+        self.assertEqual(entity_attribute.metadata,
+                         dict(python=dict(type='dataType',
+                                          value='int'
+                                          )
+                              )
+                         )
         self.assertEqual(entity_attribute.value, 1)
         self.assertEqual(entity_attribute.type, 'number')
 
     def test_entity_attribute_float(self):
         entity_attribute = EntityAttribute(2.132, False)
-        self.assertEqual(entity_attribute.metadata, dict(
-            python=dict(type='dataType', value='float')))
+        self.assertEqual(entity_attribute.metadata,
+                         dict(python=dict(type='dataType',
+                                          value='float'
+                                          )
+                              )
+                         )
         self.assertEqual(entity_attribute.value, 2.132)
         self.assertEqual(entity_attribute.type, 'number')
 
@@ -58,25 +66,41 @@ class TestEntityAttribute(unittest.TestCase):
         # Evaluates to Long in Python 2
         entity_attribute = EntityAttribute(123456789123456789123456789, False)
         if sys.version_info <= (3, 0):
-            self.assertEqual(entity_attribute.metadata, dict(
-                python=dict(type='dataType', value='long')))
+            self.assertEqual(entity_attribute.metadata,
+                             dict(python=dict(type='dataType',
+                                              value='long'
+                                              )
+                                  )
+                             )
         else:
-            self.assertEqual(entity_attribute.metadata, dict(
-                python=dict(type='dataType', value='int')))
+            self.assertEqual(entity_attribute.metadata,
+                             dict(python=dict(type='dataType',
+                                              value='int'
+                                              )
+                                  )
+                             )
         self.assertEqual(entity_attribute.value, 123456789123456789123456789)
         self.assertEqual(entity_attribute.type, 'number')
 
     def test_entity_attribute_complex(self):
         entity_attribute = EntityAttribute(complex(3, 1), False)
-        self.assertEqual(entity_attribute.metadata, dict(
-            python=dict(type='dataType', value='complex')))
+        self.assertEqual(entity_attribute.metadata,
+                         dict(python=dict(type='dataType',
+                                          value='complex'
+                                          )
+                              )
+                         )
         self.assertEqual(entity_attribute.value[0].value, 3)
         self.assertEqual(entity_attribute.value[1].value, 1)
         self.assertEqual(entity_attribute.type, 'array')
 
         entity_attribute = EntityAttribute(2.34j, False)
-        self.assertEqual(entity_attribute.metadata, dict(
-            python=dict(type='dataType', value='complex')))
+        self.assertEqual(entity_attribute.metadata,
+                         dict(python=dict(type='dataType',
+                                          value='complex'
+                                          )
+                              )
+                         )
         self.assertEqual(entity_attribute.value[0].value, 0)
         self.assertEqual(entity_attribute.value[1].value, 2.34)
         self.assertEqual(entity_attribute.type, 'array')
@@ -91,15 +115,23 @@ class TestEntityAttribute(unittest.TestCase):
         entity_attribute = EntityAttribute(u'Unicode', False)
         # Python2 distinguishes between str and unicode
         if sys.version_info <= (3, 0):
-            self.assertEqual(entity_attribute.metadata, dict(
-                python=dict(type='dataType', value='unicode')))
+            self.assertEqual(entity_attribute.metadata,
+                             dict(python=dict(type='dataType',
+                                              value='unicode'
+                                              )
+                                  )
+                             )
         self.assertEqual(entity_attribute.value, u'Unicode')
         self.assertEqual(entity_attribute.type, 'string')
 
     def test_entity_attribute_tuple(self):
         entity_attribute = EntityAttribute((1, 2), False)
-        self.assertEqual(entity_attribute.metadata, dict(
-            python=dict(type='dataType', value='tuple')))
+        self.assertEqual(entity_attribute.metadata,
+                         dict(python=dict(type='dataType',
+                                          value='tuple'
+                                          )
+                              )
+                         )
         self.assertTrue(isinstance(entity_attribute.value, list))
         self.assertEqual(entity_attribute.value[0].value, 1)
         self.assertEqual(entity_attribute.value[1].value, 2)
@@ -123,8 +155,12 @@ class TestEntityAttribute(unittest.TestCase):
 
     def test_entity_attribute_foreign_class(self):
         entity_attribute = EntityAttribute(ClassInt(), False)
-        self.assertEqual(entity_attribute.metadata, dict(
-            python=dict(type='dataType', value='class')))
+        self.assertEqual(entity_attribute.metadata,
+                         dict(python=dict(type='dataType',
+                                          value='class'
+                                          )
+                              )
+                         )
         self.assertEqual(entity_attribute.type, 'ClassInt')
         self.assertTrue(entity_attribute.value is not None)
 
@@ -136,27 +172,44 @@ class TestEntityAttribute(unittest.TestCase):
         self.assertEqual(entity_attribute.type, 'array')
 
     def test_entity_attribute_float32_list_concrete_data_type(self):
-        entity_attribute = EntityAttribute(ClassInt(), True, concreteDataType=dict(
-            int='uint32_t'), baseEntity=True)
+        entity_attribute = EntityAttribute(ClassInt(),
+                                           True,
+                                           concreteDataType=dict(
+                                               int='uint32_t'),
+                                           baseEntity=True)
         self.assertTrue(hasattr(entity_attribute, 'metadata'))
-        self.assertEqual(entity_attribute.metadata, dict(
-            dataType=dict(type='dataType', value=dict(int='uint32_t'))))
+        self.assertEqual(entity_attribute.metadata,
+                         dict(dataType=dict(type='dataType',
+                                            value=dict(int='uint32_t')
+                                            )
+                              )
+                         )
         self.assertEqual(entity_attribute.value['int'].value, 1)
         self.assertEqual(entity_attribute.type, 'ClassInt')
 
     def test_entity_attribute_foreign_ros_class(self):
         entity_attribute = EntityAttribute(RosClassWithSlotsInt(), False)
-        self.assertEqual(entity_attribute.metadata, dict(
-            python=dict(type='dataType', value='class')))
+        self.assertEqual(entity_attribute.metadata,
+                         dict(python=dict(type='dataType',
+                                          value='class'
+                                          )
+                              )
+                         )
         # FOC should not touch it unless we encode!
         self.assertEqual(entity_attribute.type, 'RosClass/Integer')
         self.assertTrue(entity_attribute.value is not None)
 
     def test_entity_attribute_foreign_ros_class_encoded(self):
-        entity_attribute = EntityAttribute(RosClassWithSlotsInt(), False, encode=True)
-        self.assertEqual(entity_attribute.metadata, dict(
-            python=dict(type='dataType', value='class')))
-        self.assertEqual(entity_attribute.type, 'RosClass%2FInteger')  # FOC should encode it
+        entity_attribute = EntityAttribute(
+            RosClassWithSlotsInt(), False, encode=True)
+        self.assertEqual(entity_attribute.metadata,
+                         dict(python=dict(type='dataType',
+                                          value='class'
+                                          )
+                              )
+                         )
+        # FOC should encode it
+        self.assertEqual(entity_attribute.type, 'RosClass%2FInteger')
         self.assertTrue(entity_attribute.value is not None)
 
 
@@ -175,7 +228,8 @@ class ComplexExample(object):
         self.test_class_int = ClassInt()
         self.test_class_int = [ClassInt()]*10  # Test id Array is supported
         self.test_class_int = ClassSlotsInt()
-        self.test_class_int = [ClassSlotsInt()]*10  # Test id Array is supported
+        # Test id Array is supported
+        self.test_class_int = [ClassSlotsInt()]*10
 
     @classmethod
     def _complex_handler(cls, obj):

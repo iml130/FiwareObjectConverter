@@ -21,7 +21,8 @@ except ImportError:
 
 
 # Error Messages
-TYPE_VALUE_METADATA_NOT_DEFINED_MESSAGE = 'One of the following is not defined in json: {type|value}'
+TYPE_VALUE_METADATA_NOT_DEFINED_MESSAGE = ('One of the following is not defined in json:' +
+                                           ' {type|value}')
 VALUE_EMPTY_MESSAGE = 'The Value entered cannot be empty!'
 
 # Types which can be retrieved from the JSON:
@@ -97,7 +98,8 @@ class ReverseEntityAttribute(object):
             temp_list = _dict['value']
             temp_value = list()
             for value in temp_list:
-                reverse_entity_attribute = ReverseEntityAttribute(value, useMetaData)
+                reverse_entity_attribute = ReverseEntityAttribute(
+                    value, useMetaData)
                 temp_value.append(reverse_entity_attribute.get_value())
 
             # Second: decide if Complex, Tuple or List
@@ -126,7 +128,7 @@ class ReverseEntityAttribute(object):
             else:
                 raise ValueError(
                     'Unknown Object-Type: ' + _dict['type'] +
-                     '. The MetaData does not specify what the actual DataType is.')
+                    '. The MetaData does not specify what the actual DataType is.')
 
             # convert back to integers
             if datatype == 'int8[]':
@@ -142,7 +144,7 @@ class ReverseEntityAttribute(object):
             if not hasattr(_dict['value'], 'items'):
                 raise ValueError(
                     'Unknown Object-Type: ' + _dict['type'] +
-                     '. And it is not possible to iterate over this Object-Type!')
+                    '. And it is not possible to iterate over this Object-Type!')
 
             temp_dict = {}
             for key, value in _dict['value'].items():

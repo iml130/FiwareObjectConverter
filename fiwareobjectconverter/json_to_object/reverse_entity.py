@@ -34,7 +34,7 @@ class ReverseEntity(object):
         self.payload = payload
 
     def set_object(self, obj, use_meta_data=True, ignore_wrong_data_type=False,
-                    set_attr=False, encoded=False):
+                   set_attr=False, encoded=False):
         # Explicitly set id and type, always!
         if encoded:
             setattr(obj, 'id', str(self.id_var))
@@ -42,8 +42,6 @@ class ReverseEntity(object):
         else:
             setattr(obj, 'id', quote.unquote(str(self.id_var)))
             setattr(obj, 'type', quote.unquote(str(self.type)))
-
-
 
         for key, value in self.payload.items():
             rea = ReverseEntityAttribute(value, use_meta_data, encoded=encoded)
@@ -57,6 +55,9 @@ class ReverseEntity(object):
                 else:
                     val = rea.get_value()
                     if type(obj.__dict__[key]) is not type(val):
-                        raise TypeError(MISMATCH_MESSAGE.format(type(obj.__dict__[key]), type(val)))
+                        raise TypeError(MISMATCH_MESSAGE.format(type(obj.__dict__[key]),
+                                                                type(val)
+                                                                )
+                                        )
                     else:
                         obj.__dict__[key] = val
