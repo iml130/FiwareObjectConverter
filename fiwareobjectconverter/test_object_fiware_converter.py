@@ -22,7 +22,7 @@ from fiwareobjectconverter.object_to_json.entity import Entity
 class Test_JsonConverter(unittest.TestCase):
 
     def test_to_fiware(self):
-        ObjectFiwareConverter.obj_to_fiware(TestClass(), ind=4)
+        ObjectFiwareConverter.obj_to_fiware(TestClass(), indent=4)
 
     def test_to_obj(self):
         test_to_obj = """{"type": "TestClass", "id": "TestClass1", "val": {"type": "number", "value": 1, "metadata": {} } }"""

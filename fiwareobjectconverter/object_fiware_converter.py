@@ -34,7 +34,7 @@ class ObjectFiwareConverter(object):
     """
 
     @classmethod
-    def obj_to_fiware(cls, _object, ind=0, data_type_dict={}, ignore_python_meta_data=False,
+    def obj_to_fiware(cls, _object, indent=0, data_type_dict={}, ignore_python_meta_data=False,
                       show_id_value=True, encode=False):
         """
         This method should be primarily used to convert a Object -> JSON-string.
@@ -63,7 +63,7 @@ class ObjectFiwareConverter(object):
         entity = Entity()
         entity.set_object(_object, data_type_dict, ignore_python_meta_data,
                           show_id_value=show_id_value, encode=encode)
-        return cls._json(entity, ind)
+        return cls._json(entity, indent)
 
     @classmethod
     def fiware_to_obj(cls, _fiware_entity, _object_structure={}, use_meta_data=True,
@@ -109,8 +109,8 @@ class ObjectFiwareConverter(object):
                 type(obj), repr(obj)))
 
     @classmethod
-    def _json(cls, obj, ind=0):
-        return json.dumps(obj.__dict__, default=cls._complex_handler, indent=ind)
+    def _json(cls, obj, indent=0):
+        return json.dumps(obj.__dict__, default=cls._complex_handler, indent=indent)
 
     @classmethod
     def _obj(cls, json_str):
