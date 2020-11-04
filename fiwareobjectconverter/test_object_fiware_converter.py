@@ -35,10 +35,10 @@ class Test_JsonConverter(unittest.TestCase):
     def test_to_obj_without_metadata_unicode(self):
         json = """{"type":"TestClass","id":"ID","val":{"type":"string","value":"i am unicode","metadata":{"python":{"type":"dataType","value":"unicode"}}}}"""
         test_class = TestClass()
-        test_class.val = str(" ")
+        test_class.val = str(' ')
         ObjectFiwareConverter.fiware_to_obj(json, test_class, use_meta_data=False)
         self.assertEqual(type(test_class.val), str)
-        self.assertEqual(test_class.val, "i am unicode")  # Not unicode
+        self.assertEqual(test_class.val, 'i am unicode')  # Not unicode
 
     def test_to_object_without_meta_data_and_type_check_unicode(self):
         json = """{"type":"TestClass","id":"ID","val":{"type":"string","value":"i am unicode","metadata":{"python":{"type":"dataType","value":"unicode"}}}}"""
@@ -46,7 +46,7 @@ class Test_JsonConverter(unittest.TestCase):
         ObjectFiwareConverter.fiware_to_obj(
             json, test_class, use_meta_data=False, ignore_wrong_data_type=True)
         self.assertEqual(type(test_class.val), str)
-        self.assertEqual(test_class.val, "i am unicode")  # Not unicode
+        self.assertEqual(test_class.val, 'i am unicode')  # Not unicode
 
     def test_to_object_without_meta_data_complex(self):
         json = """{"type": "TestClass","id": "ID","val":

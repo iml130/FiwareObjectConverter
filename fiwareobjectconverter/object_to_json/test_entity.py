@@ -20,8 +20,8 @@ class TestJsonConverter(unittest.TestCase):
 
     def test_entity_initialize_is_not_empty(self):
         entity = Entity()
-        self.assertEqual(entity.type, "Entity")
-        self.assertEqual(entity.id_var[0:6], "Entity")
+        self.assertEqual(entity.type, 'Entity')
+        self.assertEqual(entity.id_var[0:6], 'Entity')
 
     def test_entity_set_object_primitive(self):
         entity = Entity()
@@ -33,22 +33,22 @@ class TestJsonConverter(unittest.TestCase):
     def test_entity_set_object_non_primitive(self):
         entity = Entity()
         entity.set_object(TestClass(), {}, False)
-        self.assertEqual(entity.id_var[0:9], "TestClass")
-        self.assertEqual(entity.type, "TestClass")
+        self.assertEqual(entity.id_var[0:9], 'TestClass')
+        self.assertEqual(entity.type, 'TestClass')
         self.assertEqual(entity.__dict__['value'].value, 1)
 
     def test_entity_set_object_non_primitive_with_given_type_id(self):
         entity = Entity()
         entity.set_object(TypeIDTestClass(), {}, False)
-        self.assertEqual(entity.id_var[0:9], "MyId")
-        self.assertEqual(entity.type, "This should NOT be overwritten")
+        self.assertEqual(entity.id_var[0:9], 'MyId')
+        self.assertEqual(entity.type, 'This should NOT be overwritten')
         self.assertEqual(entity.__dict__['value'].value, 1)
 
     def test_entity_set_object_non_primitive_without_type_id(self):
         entity = Entity()
         entity.set_object(TestClass(), {}, False, show_id_value=False)
-        self.assertFalse(hasattr(entity, "id"))
-        self.assertFalse(hasattr(entity, "type"))
+        self.assertFalse(hasattr(entity, 'id'))
+        self.assertFalse(hasattr(entity, 'type'))
         self.assertEqual(entity.__dict__['value'].value, 1)
 
 
@@ -60,7 +60,7 @@ class TestClass(object):
 class TypeIDTestClass(object):
     def __init__(self):
         self.value = 1
-        self.type = "This should NOT be overwritten"    # Needed behaviour, so that the
+        self.type = 'This should NOT be overwritten'    # Needed behaviour, so that the
                                                         # user can decide the type and id
 
-        self.id_var = "MyId"
+        self.id_var = 'MyId'

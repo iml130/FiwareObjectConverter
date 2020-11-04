@@ -21,15 +21,15 @@ except ImportError:
 
 
 # Error Messages
-TYPE_VALUE_METADATA_NOT_DEFINED_MESSAGE = "One of the following isn't defined in json: {type|value}"
-VALUE_EMPTY_MESSAGE = "The Value entered cannot be empty!"
+TYPE_VALUE_METADATA_NOT_DEFINED_MESSAGE = 'One of the following is not defined in json: {type|value}'
+VALUE_EMPTY_MESSAGE = 'The Value entered cannot be empty!'
 
 # Types which can be retrieved from the JSON:
-NUMERICAL_TYPES = ["number", "integer", "int", "float", "double", "long", ]
-TEXT_TYPES = ["string",  "text"]
-BOOLEAN_TYPES = ["bool",  "boolean"]
-ARRAYLIKE_TYPES = ["array", "list", "tuple", "vector"]
-OBJECTLIKE_TYPES = ["object", "obj"]
+NUMERICAL_TYPES = ['number', 'integer', 'int', 'float', 'double', 'long', ]
+TEXT_TYPES = ['string',  'text']
+BOOLEAN_TYPES = ['bool',  'boolean']
+ARRAYLIKE_TYPES = ['array', 'list', 'tuple', 'vector']
+OBJECTLIKE_TYPES = ['object', 'obj']
 try:
     # Python 2
     WHOLE_NUMBERS = [int, long]
@@ -112,7 +112,7 @@ class ReverseEntityAttribute(object):
                 rea = ReverseEntityAttribute(value, useMetaData)
                 self.value[key] = rea.get_value()
 
-        elif _dict['type'].lower() == "base64":
+        elif _dict['type'].lower() == 'base64':
             # Case we have a base64 String:
             # First Unquote Special Characters
             temp_value = quote.unquote(_dict['value'])
@@ -121,18 +121,18 @@ class ReverseEntityAttribute(object):
             temp_value = base64.b64decode(temp_value)
 
             # Retrieve Information about int8 or uint8
-            if "metadata" in _dict and "dataType" in _dict["metadata"]:
+            if 'metadata' in _dict and 'dataType' in _dict['metadata']:
                 datatype = _dict['metadata']['dataType']['value']
             else:
                 raise ValueError(
-                    "Unknown Object-Type: " + _dict['type'] +
-                     ". The MetaData does not specify what the actual DataType is.")
+                    'Unknown Object-Type: ' + _dict['type'] +
+                     '. The MetaData does not specify what the actual DataType is.')
 
             # convert back to integers
-            if datatype == "int8[]":
-                temp_value = array.array("b", temp_value)
+            if datatype == 'int8[]':
+                temp_value = array.array('b', temp_value)
             else:
-                temp_value = array.array("B", temp_value)
+                temp_value = array.array('B', temp_value)
 
             # Change DataType to primitive python list
             self.value = temp_value.tolist()
@@ -141,8 +141,8 @@ class ReverseEntityAttribute(object):
             # Maybe a class with key, value or another JSON object, check if you can iterate!
             if not hasattr(_dict['value'], 'items'):
                 raise ValueError(
-                    "Unknown Object-Type: " + _dict['type'] +
-                     ". And it is not possible to iterate over this Object-Type!")
+                    'Unknown Object-Type: ' + _dict['type'] +
+                     '. And it is not possible to iterate over this Object-Type!')
 
             temp_dict = {}
             for key, value in _dict['value'].items():
@@ -159,7 +159,7 @@ class ReverseEntityAttribute(object):
             and we need to check if the input of bool is a string
         """
         if target_type == bool and isinstance(value, str):
-            self.value = value.lower in ["false", "f", "0"]
+            self.value = value.lower in ['false', 'f', '0']
         elif target_type != complex:
             self.value = target_type(value)
         else:
@@ -175,7 +175,7 @@ class ReverseEntityAttribute(object):
 
             # we try to find a valid dataType
             for target_type in target_types:
-                if metadata['python'] == dict(type="dataType", value=target_type.__name__):
+                if metadata['python'] == dict(type='dataType', value=target_type.__name__):
                     self._set_value(target_type, value)
                     return
 

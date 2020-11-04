@@ -37,7 +37,7 @@ class EntityAttribute():
 
     def __init__(self, _object, ipmd, concreteDataType=None, baseEntity=False, encode=False):
         self.value = _object
-        self.type = ""
+        self.type = ''
         self.metadata = dict()
         if baseEntity:
             self.set_concrete_meta_data(concreteDataType)
@@ -47,35 +47,35 @@ class EntityAttribute():
         if object_type is type(None):
             pass
         elif object_type is bool:
-            self.type = "boolean"
+            self.type = 'boolean'
             self.value = bool(_object)
             # self.setConcreteMetaData(concreteDataType)
         elif object_type is int:
-            self.type = "number"
+            self.type = 'number'
             self.value = int(_object)
-            self.set_python_meta_data(ipmd, "int")
+            self.set_python_meta_data(ipmd, 'int')
             # self.setConcreteMetaData(concreteDataType)
         elif object_type is float:
-            self.type = "number"
+            self.type = 'number'
             self.value = float(_object)
-            self.set_python_meta_data(ipmd, "float")
+            self.set_python_meta_data(ipmd, 'float')
             # self.setConcreteMetaData(concreteDataType)
         # Check explicitly if Python 2 is used
         elif self.python_version < (3, 0) and object_type is long:
-            self.type = "number"
+            self.type = 'number'
             self.value = long(_object)
-            self.set_python_meta_data(ipmd, "long")
+            self.set_python_meta_data(ipmd, 'long')
             # self.setConcreteMetaData(concreteDataType)
         elif object_type is complex:
-            self.type = "array"
+            self.type = 'array'
             t = complex(_object)
             self.value = [EntityAttribute(
                 t.real, ipmd), EntityAttribute(t.imag, ipmd)]
-            self.set_python_meta_data(ipmd, "complex")
+            self.set_python_meta_data(ipmd, 'complex')
             # self.setConcreteMetaData(concreteDataType)
         elif object_type is str:
             # Thanks to ROS, Bytes are converted into
-            self.type = "string"
+            self.type = 'string'
             if not encode:
                 self.value = str(_object)
             else:
@@ -84,28 +84,28 @@ class EntityAttribute():
             # self.setConcreteMetaData(concreteDataType)
         # Check explicitly if Python 2 is used
         elif self.python_version < (3, 0) and object_type is unicode:
-            self.type = "string"
+            self.type = 'string'
             if not encode:
                 self.value = unicode(_object)
             else:
                 self.value = quote.quote(unicode(_object), safe='')
             # self.setConcreteMetaData(concreteDataType)
-            self.set_python_meta_data(ipmd, "unicode")
+            self.set_python_meta_data(ipmd, 'unicode')
         elif object_type is tuple:
-            self.type = "array"
+            self.type = 'array'
             self.value = []
-            self.set_python_meta_data(ipmd, "tuple")
+            self.set_python_meta_data(ipmd, 'tuple')
             self.set_concrete_meta_data(concreteDataType)
             for item in _object:
                 self.value.append(EntityAttribute(item, ipmd, encode=encode))
         elif object_type is list:
-            self.type = "array"
+            self.type = 'array'
             self.value = []
             self.set_concrete_meta_data(concreteDataType)
             for item in _object:
                 self.value.append(EntityAttribute(item, ipmd, encode=encode))
         elif object_type is dict:
-            self.type = "object"
+            self.type = 'object'
             temp_dict = {}
             for key, value in _object.items():
                 inner_concrete_meta_data = None
@@ -123,7 +123,7 @@ class EntityAttribute():
                 iter_l = _object.__dict__
             else:
                 raise ValueError(
-                    "Cannot get attrs from {}".format(str(_object)))
+                    'Cannot get attrs from {}'.format(str(_object)))
 
             # ROS-Specific Type-Declaration
             if hasattr(_object, '_type') and hasattr(_object, '_slot_types') and hasattr(_object, '__slots__'):
@@ -133,7 +133,7 @@ class EntityAttribute():
                 else:
                     self.type = quote.quote(_object._type, safe='')
 
-                self.set_python_meta_data(ipmd, "class")
+                self.set_python_meta_data(ipmd, 'class')
                 # Special Case 'Image-like'-Data in ROS (very long 'int8[]'- and 'uint8[]' - arrays)
                 # These are converted into Base64 (escaped)
                 temp_dict = {}
@@ -145,7 +145,7 @@ class EntityAttribute():
                         # Generate Base64 String of the Array:
                         temp_dict[key] = EntityAttribute(
                             None, ipmd, encode=encode)
-                        temp_dict[key].type = "base64"
+                        temp_dict[key].type = 'base64'
 
                         # Either generate unsigned or signed byte-array
                         if 'int8[' in key_type:
@@ -171,7 +171,7 @@ class EntityAttribute():
                             # We have a special DatType for it
                             inner_concrete_meta_data = concreteDataType[key]
                             already_set = False  # Boolean to check if data ist already set
-                            if "uint8[" in inner_concrete_meta_data:
+                            if 'uint8[' in inner_concrete_meta_data:
                                 # SPECIAL ROS CASE we have uint8[]-Array as a String or byte
                                 # See: http://wiki.ros.org/msg#Fields -> Array-Handling
                                 strange_obj = getattr(_object, key)
@@ -179,7 +179,7 @@ class EntityAttribute():
                                 if isinstance(strange_obj, str):
                                     # Looks like ROS converted it for us into str!
                                     to_convert = array.array(
-                                        "B", strange_obj).tolist()
+                                        'B', strange_obj).tolist()
                                 if not self.python_version < (3, 0) and isinstance(strange_obj, bytes):
                                     # Looks like ROS converted it for us into bytes!
                                     to_convert = list(strange_obj)
@@ -188,7 +188,7 @@ class EntityAttribute():
                                     # Generate Base64 String of the Array:
                                     temp_dict[key] = EntityAttribute(
                                         None, ipmd, encode=encode)
-                                    temp_dict[key].type = "base64"
+                                    temp_dict[key].type = 'base64'
 
                                     # Generate unsigned or byte-array
                                     temp_dict[key].value = array.array(
@@ -220,7 +220,7 @@ class EntityAttribute():
             else:
                 # Simple Class. Recursively retrieve the other values
                 self.type = _object.__class__.__name__
-                self.set_python_meta_data(ipmd, "class")
+                self.set_python_meta_data(ipmd, 'class')
                 temp_dict = {}
                 for key in iter_l:
                     if key.startswith('_'):
@@ -234,14 +234,14 @@ class EntityAttribute():
 
         # Remove metadata-Attribute if it is empty (minimizing the JSON)
         if self.metadata == {}:
-            delattr(self, "metadata")
+            delattr(self, 'metadata')
 
     def set_python_meta_data(self, ignore_python_meta_data, val):
         if not ignore_python_meta_data:
-            self.metadata["python"] = dict(type="dataType", value=val)
+            self.metadata['python'] = dict(type='dataType', value=val)
 
     def set_concrete_meta_data(self, val, obj=None):
         if val is not None and obj is None:
-            self.metadata["dataType"] = dict(type="dataType", value=val)
+            self.metadata['dataType'] = dict(type='dataType', value=val)
         elif val is not None:
-            obj.metadata["dataType"] = dict(type="dataType", value=val)
+            obj.metadata['dataType'] = dict(type='dataType', value=val)

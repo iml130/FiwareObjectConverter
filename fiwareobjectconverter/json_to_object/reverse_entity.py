@@ -18,7 +18,7 @@ except ImportError:
     import urllib as quote
 from fiwareobjectconverter.json_to_object.reverse_entity_attribute import ReverseEntityAttribute
 
-MISMATCH_MESSAGE = "The Class-Type does not match with the JSON-type ({} != {})"
+MISMATCH_MESSAGE = 'The Class-Type does not match with the JSON-type ({} != {})'
 
 
 class ReverseEntity(object):

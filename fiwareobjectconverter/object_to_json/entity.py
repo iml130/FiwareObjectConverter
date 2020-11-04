@@ -86,12 +86,12 @@ class Entity(object):
 
             for key in iter_l:
                 # Explicitly set id and type if it exists
-                if (key == "id" and show_id_value):
+                if (key == 'id' and show_id_value):
                     if isinstance(_object, dict):
                         self.id_var = _object[key]
                     else:
                         self.id_var = getattr(_object, key)
-                elif (key == "type" and show_id_value):
+                elif (key == 'type' and show_id_value):
                     if isinstance(_object, dict):
                         self.type = _object[key]
                     else:
@@ -117,4 +117,4 @@ class Entity(object):
             self.id_var = quote.quote(self.id_var, safe='')
 
     def __repr__(self):
-        return "Id: " + str(self.id_var) + ", Type: " + str(self.type)
+        return 'Id: ' + str(self.id_var) + ', Type: ' + str(self.type)
