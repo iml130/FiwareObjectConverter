@@ -35,7 +35,7 @@ class ObjectFiwareConverter(object):
 
     @classmethod
     def obj_to_fiware(cls, _object, indent=0, data_type_dict={}, ignore_python_meta_data=False,
-                      show_id_value=True, encode=False):
+                      show_id_value=True, encode=False, ngsi_ld=True):
         """
         This method should be primarily used to convert a Object -> JSON-string.
 
@@ -62,12 +62,12 @@ class ObjectFiwareConverter(object):
 
         entity = Entity()
         entity.set_object(_object, data_type_dict, ignore_python_meta_data,
-                          show_id_value=show_id_value, encode=encode)
+                          show_id_value=show_id_value, encode=encode, ngsi_ld=ngsi_ld)
         return cls._json(entity, indent)
 
     @classmethod
     def fiware_to_obj(cls, _fiware_entity, _object_structure={}, use_meta_data=True,
-                      ignore_wrong_data_type=False, set_attr=False, encoded=False):
+                      ignore_wrong_data_type=False, set_attr=False, encoded=False, ngsi_ld=True):
         """
         This method should be primarily used to convert a JSON-string -> Object.
 
@@ -98,7 +98,7 @@ class ObjectFiwareConverter(object):
             json_obj = _fiware_entity
         reverse_entity = ReverseEntity(**json_obj)
         return reverse_entity.set_object(_object_structure, use_meta_data, ignore_wrong_data_type,
-                                         set_attr, encoded=encoded)
+                                         set_attr, encoded=encoded, ngsi_ld=ngsi_ld)
 
     @classmethod
     def _complex_handler(cls, obj):

@@ -44,9 +44,10 @@ class Entity(object):
     def __init__(self):
         self.type = self.__class__.__name__
         self.id_var = self.type + str(uuid.uuid4())
+        
 
     def set_object(self, _object, data_type_dict, ignore_python_meta_data,
-                   show_id_value=True, encode=False):
+                   show_id_value=True, encode=False, ngsi_ld=True):
         """
         ...
 

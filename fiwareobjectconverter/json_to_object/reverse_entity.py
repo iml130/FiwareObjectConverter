@@ -34,7 +34,7 @@ class ReverseEntity(object):
         self.payload = payload
 
     def set_object(self, obj, use_meta_data=True, ignore_wrong_data_type=False,
-                   set_attr=False, encoded=False):
+                   set_attr=False, encoded=False, ngsi_ld=True):
         # Explicitly set id and type, always!
         if encoded:
             setattr(obj, 'id', str(self.id_var))
