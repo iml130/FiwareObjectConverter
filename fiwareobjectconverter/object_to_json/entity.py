@@ -23,6 +23,7 @@ except ImportError:
     import urllib as quote
 
 from fiwareobjectconverter.object_to_json.entity_attribute import EntityAttribute
+from fiwareobjectconverter.object_to_json.entity_attribute_ld import EntityAttributeLD
 
 ERROR_MESSAGE_ATTTRIBUTE = 'Error setting Object in \'setObject\' : '
 
@@ -75,7 +76,14 @@ class Entity(object):
             if show_id_value:
                 # Setting EntityType and EntitiyID
                 self.type = _object.__class__.__name__
-                self.id_var = self.type + str(uuid.uuid4())
+                if ngsi_ld:
+                    self.id_var = "urn:ngsi-ld:"+self.type+":"+str(uuid.uuid4())
+                    self.context = [
+                        "https://schema.lab.fiware.org/ld/context",
+                        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld"
+                        ]
+                else:
+                    self.id_var = self.type + str(uuid.uuid4())
 
             # Set Key/Value in own Dictionary
             if isinstance(_object, dict):
@@ -88,10 +96,13 @@ class Entity(object):
             for key in iter_l:
                 # Explicitly set id and type if it exists
                 if (key == 'id' and show_id_value):
-                    if isinstance(_object, dict):
-                        self.id_var = _object[key]
+                    if ngsi_ld:
+                        self.id_var = "urn:ngsi-ld:"+self.type+":"+str(uuid.uuid4())
                     else:
-                        self.id_var = getattr(_object, key)
+                        if isinstance(_object, dict):
+                            self.id_var = _object[key]
+                        else:
+                            self.id_var = getattr(_object, key)
                 elif (key == 'type' and show_id_value):
                     if isinstance(_object, dict):
                         self.type = _object[key]
@@ -106,9 +117,14 @@ class Entity(object):
                         # Object contains invalid key-name, ignore!
                         pass
                     else:
-                        self.__dict__[key] = EntityAttribute(value, ignore_python_meta_data,
-                                                             data_type_dict.get(key),
-                                                             baseEntity=True, encode=encode)
+                        if ngsi_ld:
+                            self.__dict__[key] = EntityAttributeLD(value, ignore_python_meta_data,
+                                                                 data_type_dict.get(key),
+                                                                 baseEntity=True, encode=encode)
+                        else:
+                            self.__dict__[key] = EntityAttribute(value, ignore_python_meta_data,
+                                                                 data_type_dict.get(key),
+                                                                 baseEntity=True, encode=encode)
         except AttributeError as ex:
             raise ValueError(ERROR_MESSAGE_ATTTRIBUTE, ex) from ex
 
