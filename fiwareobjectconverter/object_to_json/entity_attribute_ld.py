@@ -38,15 +38,14 @@ class EntityAttributeLD():
             # self.set_concrete_meta_data(concreteDataType)
         object_type = type(_object)
 
+        # Simply if-then-else to the Json format
         if object_type is type(None):
             pass
         # Check explicitly if Python 2 is used
         elif self.python_version < (3, 0) and object_type in (long, unicode):
-            if object_type is unicode:
-                if encode:
-                    self.value = quote.quote(unicode(_object), safe='')
+            if object_type is unicode and encode:
+                self.value = quote.quote(unicode(_object), safe='')
             self.set_python_meta_data(ipmd, object_type.__name__)
-        # Simply if-then-else to the Json format
         elif object_type in (int, float):
             self.set_python_meta_data(ipmd, object_type.__name__)
         elif object_type is str:
@@ -54,25 +53,16 @@ class EntityAttributeLD():
             if encode:
                 self.value = quote.quote(_object, safe='')
         elif object_type is complex:
-            self.type = 'array'
-            t = complex(_object)
-            self.value = [EntityAttributeLD(
-                t.real, ipmd), EntityAttributeLD(t.imag, ipmd)]
-            self.set_python_meta_data(ipmd, 'complex')
-        elif object_type is tuple:
-            self.type = 'array'
+            self.value = [EntityAttributeLD(_object.real, ipmd),
+                         EntityAttributeLD(_object.imag, ipmd)]
+            self.set_python_meta_data(ipmd, object_type.__name__)
+        elif object_type in (tuple, list):
             self.value = []
-            self.set_python_meta_data(ipmd, 'tuple')
             self.set_concrete_meta_data(concreteDataType)
             for item in _object:
                 self.value.append(EntityAttributeLD(item, ipmd, encode=encode))
-        elif object_type is list:
-            self.type = 'array'
-            self.value = []
-            self.set_concrete_meta_data(concreteDataType)
-            for item in _object:
-                self.value.append(EntityAttributeLD(
-                    item, ipmd, encode=encode))
+            if object_type is tuple:
+                self.set_python_meta_data(ipmd, object_type.__name__)
         elif object_type is dict:
             self.type = 'object'
             temp_dict = {}
@@ -80,8 +70,8 @@ class EntityAttributeLD():
                 inner_concrete_meta_data = None
                 if concreteDataType is not None and key in concreteDataType:
                     inner_concrete_meta_data = concreteDataType[key]
-                temp_dict[key] = EntityAttributeLD(
-                    value, ipmd, inner_concrete_meta_data, encode=encode)
+                temp_dict[key] = EntityAttributeLD(value, ipmd, inner_concrete_meta_data,
+                                                 encode=encode)
             self.value = temp_dict
         else:
             # Case it is a Class
