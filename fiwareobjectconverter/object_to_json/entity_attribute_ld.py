@@ -221,7 +221,7 @@ class EntityAttributeLD():
 
     def set_python_meta_data(self, ignore_python_meta_data, val):
         if not ignore_python_meta_data:
-            self.python = val
+            self.python = dict(type='Property', value=val) 
 
     def set_concrete_meta_data(self, val, obj=None):
         if val is not None and obj is None:
