@@ -41,20 +41,13 @@ class EntityAttributeLD():
         if object_type is type(None):
             pass
         # Check explicitly if Python 2 is used
-        elif self.python_version < (3, 0):
-            if object_type is long:
-                self.type = 'Property'
-                self.value = long(_object)
-                self.set_python_meta_data(ipmd, 'long')
-            elif object_type is unicode:
-                self.type = 'string'
-                if not encode:
-                    self.value = unicode(_object)
-                else:
+        elif self.python_version < (3, 0) and object_type in (long, unicode):
+            if object_type is unicode:
+                if encode:
                     self.value = quote.quote(unicode(_object), safe='')
-                self.set_python_meta_data(ipmd, 'unicode')
+            self.set_python_meta_data(ipmd, object_type.__name__)
         # Simply if-then-else to the Json format
-        elif object_type is (int or float):
+        elif object_type in (int, float):
             self.set_python_meta_data(ipmd, object_type.__name__)
         elif object_type is str:
             # Thanks to ROS, Bytes are converted into
