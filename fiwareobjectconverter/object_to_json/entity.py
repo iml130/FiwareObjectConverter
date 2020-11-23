@@ -126,7 +126,7 @@ class Entity(object):
                                                                  data_type_dict.get(key),
                                                                  baseEntity=True, encode=encode)
         except AttributeError as ex:
-            raise ValueError(ERROR_MESSAGE_ATTTRIBUTE, ex) from ex
+            raise ValueError(ERROR_MESSAGE_ATTTRIBUTE, ex)
 
         # Encode in HTML (OCB Specific!)
         if encode and show_id_value:
