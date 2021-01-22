@@ -15,7 +15,6 @@
 
 import unittest
 from fiwareobjectconverter.object_fiware_converter import ObjectFiwareConverter
-from fiwareobjectconverter.object_to_json.entity import Entity
 
 
 class TestJsonConverter(unittest.TestCase):
