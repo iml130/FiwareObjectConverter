@@ -28,8 +28,8 @@ class ReverseEntity(object):
         'setAttr' is here explicitly used, if set to true.
     """
 
-    def __init__(self, type_var=None, id_=None, *args, **payload):
-        self.type = type_var
+    def __init__(self, type_=None, id_=None, *args, **payload):
+        self.type = type_
         self.id = id_
         self.payload = payload
 
