@@ -45,14 +45,15 @@ class Entity(object):
         self.type = self.__class__.__name__
         self.id = self.type + str(uuid.uuid4())
 
-    def set_object(self, _object, data_type_dict, ignore_python_meta_data,
+
+    def set_object(self, object_, data_type_dict, ignore_python_meta_data,
                    show_id_value=True, encode=False):
         """
         ...
 
         Parameters
         ----------
-        _object :
+        object_ :
             The Object, which should be converted.
         data_type_dict : dict
             <Desctription of data_type_dict>
@@ -73,34 +74,34 @@ class Entity(object):
         try:
             if show_id_value:
                 # Setting EntityType and EntitiyID
-                self.type = _object.__class__.__name__
+                self.type = object_.__class__.__name__
                 self.id = self.type + str(uuid.uuid4())
 
             # Set Key/Value in own Dictionary
-            if isinstance(_object, dict):
-                iter_l = _object.keys()
-            elif hasattr(_object, '__slots__'):
-                iter_l = getattr(_object, '__slots__')
+            if isinstance(object_, dict):
+                iter_l = object_.keys()
+            elif hasattr(object_, '__slots__'):
+                iter_l = getattr(object_, '__slots__')
             else:
-                iter_l = _object.__dict__
+                iter_l = object_.__dict__
 
             for key in iter_l:
                 # Explicitly set id and type if it exists
                 if (key == 'id' and show_id_value):
-                    if isinstance(_object, dict):
-                        self.id = _object[key]
+                    if isinstance(object_, dict):
+                        self.id = object_[key]
                     else:
-                        self.id = getattr(_object, key)
+                        self.id = getattr(object_, key)
                 elif (key == 'type' and show_id_value):
-                    if isinstance(_object, dict):
-                        self.type = _object[key]
+                    if isinstance(object_, dict):
+                        self.type = object_[key]
                     else:
-                        self.type = getattr(_object, key)
+                        self.type = getattr(object_, key)
                 else:
-                    if isinstance(_object, dict):
-                        value = _object[key]
+                    if isinstance(object_, dict):
+                        value = object_[key]
                     else:
-                        value = getattr(_object, key)
+                        value = getattr(object_, key)
                     if key.startswith('_', 0, 1):
                         # Object contains invalid key-name, ignore!
                         pass

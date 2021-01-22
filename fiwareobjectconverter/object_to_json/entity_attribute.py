@@ -35,40 +35,40 @@ class EntityAttribute():
     """
     python_version = sys.version_info
 
-    def __init__(self, _object, ipmd, concreteDataType=None, baseEntity=False, encode=False):
-        self.value = _object
+    def __init__(self, object_, ipmd, concreteDataType=None, baseEntity=False, encode=False):
+        self.value = object_
         self.type = ''
         self.metadata = dict()
         if baseEntity:
             self.set_concrete_meta_data(concreteDataType)
-        object_type = type(_object)
+        object_type = type(object_)
 
         # Simply if-then-else to the Json fromat
         if object_type is type(None):
             pass
         elif object_type is bool:
             self.type = 'boolean'
-            self.value = bool(_object)
+            self.value = bool(object_)
             # self.setConcreteMetaData(concreteDataType)
         elif object_type is int:
             self.type = 'number'
-            self.value = int(_object)
+            self.value = int(object_)
             self.set_python_meta_data(ipmd, 'int')
             # self.setConcreteMetaData(concreteDataType)
         elif object_type is float:
             self.type = 'number'
-            self.value = float(_object)
+            self.value = float(object_)
             self.set_python_meta_data(ipmd, 'float')
             # self.setConcreteMetaData(concreteDataType)
         # Check explicitly if Python 2 is used
         elif self.python_version < (3, 0) and object_type is long:
             self.type = 'number'
-            self.value = long(_object)
+            self.value = long(object_)
             self.set_python_meta_data(ipmd, 'long')
             # self.setConcreteMetaData(concreteDataType)
         elif object_type is complex:
             self.type = 'array'
-            t = complex(_object)
+            t = complex(object_)
             self.value = [EntityAttribute(
                 t.real, ipmd), EntityAttribute(t.imag, ipmd)]
             self.set_python_meta_data(ipmd, 'complex')
@@ -77,18 +77,18 @@ class EntityAttribute():
             # Thanks to ROS, Bytes are converted into
             self.type = 'string'
             if not encode:
-                self.value = str(_object)
+                self.value = str(object_)
             else:
-                self.value = quote.quote(str(_object), safe='')
+                self.value = quote.quote(str(object_), safe='')
 
             # self.setConcreteMetaData(concreteDataType)
         # Check explicitly if Python 2 is used
         elif self.python_version < (3, 0) and object_type is unicode:
             self.type = 'string'
             if not encode:
-                self.value = unicode(_object)
+                self.value = unicode(object_)
             else:
-                self.value = quote.quote(unicode(_object), safe='')
+                self.value = quote.quote(unicode(object_), safe='')
             # self.setConcreteMetaData(concreteDataType)
             self.set_python_meta_data(ipmd, 'unicode')
         elif object_type is tuple:
@@ -96,18 +96,18 @@ class EntityAttribute():
             self.value = []
             self.set_python_meta_data(ipmd, 'tuple')
             self.set_concrete_meta_data(concreteDataType)
-            for item in _object:
+            for item in object_:
                 self.value.append(EntityAttribute(item, ipmd, encode=encode))
         elif object_type is list:
             self.type = 'array'
             self.value = []
             self.set_concrete_meta_data(concreteDataType)
-            for item in _object:
+            for item in object_:
                 self.value.append(EntityAttribute(item, ipmd, encode=encode))
         elif object_type is dict:
             self.type = 'object'
             temp_dict = {}
-            for key, value in _object.items():
+            for key, value in object_.items():
                 inner_concrete_meta_data = None
                 if concreteDataType is not None and key in concreteDataType:
                     inner_concrete_meta_data = concreteDataType[key]
@@ -117,34 +117,34 @@ class EntityAttribute():
         else:
             # Case it is a Class
             # check explicitly if it has the needed attrs
-            if hasattr(_object, '__slots__'):
-                iter_l = getattr(_object, '__slots__')
-            elif hasattr(_object, '__dict__'):
-                iter_l = _object.__dict__
+            if hasattr(object_, '__slots__'):
+                iter_l = getattr(object_, '__slots__')
+            elif hasattr(object_, '__dict__'):
+                iter_l = object_.__dict__
             else:
                 raise ValueError(
-                    'Cannot get attrs from {}'.format(str(_object)))
+                    'Cannot get attrs from {}'.format(str(object_)))
 
             # ROS-Specific Type-Declaration
-            if (hasattr(_object, '_type') and
-                hasattr(_object, '_slot_types') and
-                hasattr(_object, '__slots__')
+            if (hasattr(object_, '_type') and
+                hasattr(object_, '_slot_types') and
+                hasattr(object_, '__slots__')
                 ):
                 # This is a special CASE for ROS!!!!
                 if not encode:
-                    self.type = _object._type
+                    self.type = object_._type
                 else:
-                    self.type = quote.quote(_object._type, safe='')
+                    self.type = quote.quote(object_._type, safe='')
 
                 self.set_python_meta_data(ipmd, 'class')
                 # Special Case 'Image-like'-Data in ROS (very long 'int8[]'- and 'uint8[]'- arrays)
                 # These are converted into Base64 (escaped)
                 temp_dict = {}
-                for key, key_type in zip(_object.__slots__, _object._slot_types):
+                for key, key_type in zip(object_.__slots__, object_._slot_types):
                     if key.startswith('_'):
                         continue
                     if (('int8[' in key_type or 'uint8[' in key_type) and
-                            len(getattr(_object, key)) >= THRESH
+                            len(getattr(object_, key)) >= THRESH
                         ):
                         # TODO DL 256 -> Threshold?
                         # Generate Base64 String of the Array:
@@ -155,10 +155,10 @@ class EntityAttribute():
                         # Either generate unsigned or signed byte-array
                         if 'int8[' in key_type:
                             temp_dict[key].value = array.array(
-                                'b', getattr(_object, key)).tostring()
+                                'b', getattr(object_, key)).tostring()
                         else:
                             temp_dict[key].value = array.array(
-                                'B', getattr(_object, key)).tostring()
+                                'B', getattr(object_, key)).tostring()
 
                         # Form that Byte-Array: generate Base64 String
                         temp_dict[key].value = base64.b64encode(
@@ -179,7 +179,7 @@ class EntityAttribute():
                             if 'uint8[' in inner_concrete_meta_data:
                                 # SPECIAL ROS CASE we have uint8[]-Array as a String or byte
                                 # See: http://wiki.ros.org/msg#Fields -> Array-Handling
-                                strange_obj = getattr(_object, key)
+                                strange_obj = getattr(object_, key)
                                 to_convert = None
                                 if isinstance(strange_obj, str):
                                     # Looks like ROS converted it for us into str!
@@ -199,7 +199,7 @@ class EntityAttribute():
 
                                     # Generate unsigned or byte-array
                                     temp_dict[key].value = array.array(
-                                        'B', getattr(_object, key)).tostring()
+                                        'B', getattr(object_, key)).tostring()
 
                                     # Form that Byte-Array: generate Base64 String
                                     temp_dict[key].value = base64.b64encode(
@@ -215,18 +215,18 @@ class EntityAttribute():
 
                             else:
                                 # Something else we should convert
-                                to_convert = getattr(_object, key)
+                                to_convert = getattr(object_, key)
                             if already_set is False:
                                 temp_dict[key] = EntityAttribute(
                                     to_convert, ipmd, inner_concrete_meta_data, encode=encode)
                         else:
                             # Just get its child and convert it
                             temp_dict[key] = EntityAttribute(
-                                getattr(_object, key), ipmd, None, encode=encode)
+                                getattr(object_, key), ipmd, None, encode=encode)
                 self.value = temp_dict
             else:
                 # Simple Class. Recursively retrieve the other values
-                self.type = _object.__class__.__name__
+                self.type = object_.__class__.__name__
                 self.set_python_meta_data(ipmd, 'class')
                 temp_dict = {}
                 for key in iter_l:
@@ -236,7 +236,7 @@ class EntityAttribute():
                     if concreteDataType is not None and key in concreteDataType:
                         inner_concrete_meta_data = concreteDataType[key]
                     temp_dict[key] = EntityAttribute(
-                        getattr(_object, key), ipmd, inner_concrete_meta_data, encode=encode)
+                        getattr(object_, key), ipmd, inner_concrete_meta_data, encode=encode)
                 self.value = temp_dict
 
         # Remove metadata-Attribute if it is empty (minimizing the JSON)
