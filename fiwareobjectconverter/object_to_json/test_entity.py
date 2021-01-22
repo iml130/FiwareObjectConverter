@@ -21,7 +21,7 @@ class TestJsonConverter(unittest.TestCase):
     def test_entity_initialize_is_not_empty(self):
         entity = Entity()
         self.assertEqual(entity.type, 'Entity')
-        self.assertEqual(entity.id_var[0:6], 'Entity')
+        self.assertEqual(entity.id[0:6], 'Entity')
 
     def test_entity_set_object_primitive(self):
         entity = Entity()
@@ -33,14 +33,14 @@ class TestJsonConverter(unittest.TestCase):
     def test_entity_set_object_non_primitive(self):
         entity = Entity()
         entity.set_object(TestClass(), {}, False)
-        self.assertEqual(entity.id_var[0:9], 'TestClass')
+        self.assertEqual(entity.id[0:9], 'TestClass')
         self.assertEqual(entity.type, 'TestClass')
         self.assertEqual(entity.__dict__['value'].value, 1)
 
     def test_entity_set_object_non_primitive_with_given_type_id(self):
         entity = Entity()
         entity.set_object(TypeIDTestClass(), {}, False)
-        self.assertEqual(entity.id_var[0:9], 'MyId')
+        self.assertEqual(entity.id[0:9], 'MyId')
         self.assertEqual(entity.type, 'This should NOT be overwritten')
         self.assertEqual(entity.__dict__['value'].value, 1)
 
@@ -63,4 +63,4 @@ class TypeIDTestClass(object):
         self.type = 'This should NOT be overwritten'    # Needed behaviour, so that the
                                                         # user can decide the type and id
 
-        self.id_var = 'MyId'
+        self.id = 'MyId'

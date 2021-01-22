@@ -28,19 +28,19 @@ class ReverseEntity(object):
         'setAttr' is here explicitly used, if set to true.
     """
 
-    def __init__(self, type_var=None, id_var=None, *args, **payload):
+    def __init__(self, type_var=None, id_=None, *args, **payload):
         self.type = type_var
-        self.id_var = id_var
+        self.id = id_
         self.payload = payload
 
     def set_object(self, obj, use_meta_data=True, ignore_wrong_data_type=False,
                    set_attr=False, encoded=False):
         # Explicitly set id and type, always!
         if encoded:
-            setattr(obj, 'id', str(self.id_var))
+            setattr(obj, 'id', str(self.id))
             setattr(obj, 'type', str(self.type))
         else:
-            setattr(obj, 'id', quote.unquote(str(self.id_var)))
+            setattr(obj, 'id', quote.unquote(str(self.id)))
             setattr(obj, 'type', quote.unquote(str(self.type)))
 
         for key, value in self.payload.items():

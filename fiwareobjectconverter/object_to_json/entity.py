@@ -37,13 +37,13 @@ class Entity(object):
     ----------
     type : str
         xxx
-    id_var : str
+    id : str
         xxx
     """
 
     def __init__(self):
         self.type = self.__class__.__name__
-        self.id_var = self.type + str(uuid.uuid4())
+        self.id = self.type + str(uuid.uuid4())
 
     def set_object(self, _object, data_type_dict, ignore_python_meta_data,
                    show_id_value=True, encode=False):
@@ -74,7 +74,7 @@ class Entity(object):
             if show_id_value:
                 # Setting EntityType and EntitiyID
                 self.type = _object.__class__.__name__
-                self.id_var = self.type + str(uuid.uuid4())
+                self.id = self.type + str(uuid.uuid4())
 
             # Set Key/Value in own Dictionary
             if isinstance(_object, dict):
@@ -88,9 +88,9 @@ class Entity(object):
                 # Explicitly set id and type if it exists
                 if (key == 'id' and show_id_value):
                     if isinstance(_object, dict):
-                        self.id_var = _object[key]
+                        self.id = _object[key]
                     else:
-                        self.id_var = getattr(_object, key)
+                        self.id = getattr(_object, key)
                 elif (key == 'type' and show_id_value):
                     if isinstance(_object, dict):
                         self.type = _object[key]
@@ -114,7 +114,7 @@ class Entity(object):
         # Encode in HTML (OCB Specific!)
         if encode and show_id_value:
             self.type = quote.quote(self.type, safe='')
-            self.id_var = quote.quote(self.id_var, safe='')
+            self.id = quote.quote(self.id, safe='')
 
     def __repr__(self):
-        return 'Id: ' + str(self.id_var) + ', Type: ' + str(self.type)
+        return 'Id: ' + str(self.id) + ', Type: ' + str(self.type)
