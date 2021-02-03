@@ -22,6 +22,7 @@ import json
 import sys
 import os
 from fiwareobjectconverter.object_to_json.entity import Entity
+from fiwareobjectconverter.object_to_json.normalize_to_ld import LD_Normalizer
 from fiwareobjectconverter.json_to_object.reverse_entity import ReverseEntity
 # Adding This Sub-Project into the PythonPath
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
@@ -35,7 +36,7 @@ class ObjectFiwareConverter(object):
 
     @classmethod
     def obj_to_fiware(cls, object_, indent=0, data_type_dict=None, ignore_python_meta_data=False,
-                      show_id_value=True, encode=False):
+                      show_id_value=True, encode=False, ngsi_ld=True):
         """
         This method should be primarily used to convert a Object -> JSON-string.
 
@@ -64,11 +65,14 @@ class ObjectFiwareConverter(object):
         entity = Entity()
         entity.set_object(object_, data_type_dict, ignore_python_meta_data,
                           show_id_value=show_id_value, encode=encode)
+        if ngsi_ld:
+            json_ = LD_Normalizer.normalize(cls._obj(cls._json(entity)))
+            return json.dumps(json_, default=cls._complex_handler, indent=indent)
         return cls._json(entity, indent)
 
     @classmethod
     def fiware_to_obj(cls, fiware_entity, object_structure=None, use_meta_data=True,
-                      ignore_wrong_data_type=False, set_attr=False, encoded=False):
+                      ignore_wrong_data_type=False, set_attr=False, encoded=False, ngsi_ld=True):
         """
         This method should be primarily used to convert a JSON-string -> Object.
 
