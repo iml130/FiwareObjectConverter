@@ -22,7 +22,7 @@ import json
 import sys
 import os
 from fiwareobjectconverter.object_to_json.entity import Entity
-from fiwareobjectconverter.object_to_json.normalize_to_ld import LD_Normalizer
+from fiwareobjectconverter.normalizer.normalize_to_ld import LD_Normalizer
 from fiwareobjectconverter.json_to_object.reverse_entity import ReverseEntity
 # Adding This Sub-Project into the PythonPath
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
