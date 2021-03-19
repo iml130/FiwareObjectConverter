@@ -1,5 +1,3 @@
-# python class --> foc(python class) --> ngsi v2 --> json string --> ngsi-ld
-
 class V2_Normalizer:
     @classmethod
     def _ngsiv2_uri(cls, ld_uri):
